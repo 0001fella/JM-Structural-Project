@@ -1,0 +1,109 @@
+:root {
+  --primary-gradient: linear-gradient(to right, #1e3a8a, #06b6d4); /* from-blue-700 to-cyan-600 */
+  --secondary-gradient: linear-gradient(to bottom, #eff6ff, #ffffff); /* from-blue-50 to-white */
+  --text-primary: #1e3a8a; /* text-blue-900 */
+  --text-secondary: #0369a1; /* text-blue-800 */
+  --highlight: #3b82f6; /* blue-500 */
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.1);
+  --blur-bg: rgba(255, 255, 255, 0.05);
+}
+
+/* Typography Enhancements */
+body {
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--secondary-gradient);
+  color: var(--text-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Button Styles */
+.btn-primary {
+  background: var(--primary-gradient);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-outline {
+  background: white;
+  color: var(--text-secondary);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  border: 2px solid #93c5fd;
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  border-color: #3b82f6;
+}
+
+/* Card Glow Hover Effect */
+.card-glow:hover {
+  box-shadow: 0 0 25px rgba(59, 130, 246, 0.3);
+  transform: translateY(-6px);
+}
+
+/* Pulse Animations */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animation-delay-1000 {
+  animation-delay: 1s;
+}
+
+.animation-delay-1500 {
+  animation-delay: 1.5s;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+/* Utilities */
+.bg-blur {
+  backdrop-filter: blur(12px);
+  background-color: var(--blur-bg);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 1rem;
+}
+
+/* Statistic Box Styling */
+.stat-box {
+  background: white;
+  border-radius: 1rem;
+  border: 1px solid #dbeafe; /* border-blue-100 */
+  text-align: center;
+  padding: 1.5rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+}
+
+.stat-box:hover {
+  transform: translateY(-4px);
+  transition: 0.3s ease-in-out;
+}
