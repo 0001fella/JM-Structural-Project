@@ -1,40 +1,72 @@
-// src/pages/LoginPage.js
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-const LoginPage = () => {
+// Placeholder for useAuth hook.
+// In a real application, you would replace this with your actual AuthContext setup.
+const useAuth = () => {
+  const login = async (email, password) => {
+    console.log('Attempting to log in with:', email, password);
+    // Simulate API call delay
+    return new Promise(resolve => setTimeout(resolve, 1000));
+    // In a real app, you'd call your authentication service here (e.g., Firebase auth)
+    // throw new Error("Login failed: Invalid credentials (placeholder error)");
+  };
+
+  const signup = async (name, email, password) => {
+    console.log('Attempting to sign up with:', name, email, password);
+    // Simulate API call delay
+    return new Promise(resolve => setTimeout(resolve, 1000));
+    // In a real app, you'd call your authentication service here (e.g., Firebase auth)
+    // throw new Error("Signup failed: Email already in use (placeholder error)");
+  };
+
+  return { login, signup };
+};
+
+const LoginPage = ({ setCurrentPage }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  
+  const isMounted = useRef(true); // Track mounted state
+
   const { login, signup } = useAuth();
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    return () => {
+      // Set to false when component unmounts
+      isMounted.current = false;
+    };
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    
+
     try {
       if (isLogin) {
         await login(email, password);
-        navigate('/dashboard');
+        if (isMounted.current) {
+          setCurrentPage('dashboard'); // Redirect to dashboard
+        }
       } else {
         await signup(name, email, password);
-        navigate('/dashboard');
+        if (isMounted.current) {
+          setCurrentPage('dashboard'); // Redirect to dashboard
+        }
       }
     } catch (err) {
-      setError('Failed to authenticate. Please check your credentials.');
-      setLoading(false);
+      if (isMounted.current) {
+        setError('Failed to authenticate. Please check your credentials and try again.');
+        setLoading(false);
+      }
     }
   };
 
-  // AI particles for background
+  // Construction-themed particles for background (kept for existing aesthetic)
   const particles = Array.from({ length: 30 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
@@ -44,28 +76,47 @@ const LoginPage = () => {
   }));
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-gradient-to-br from-[#0A142F] to-[#1C2C65] font-sans relative overflow-hidden">
-      {/* AI Background Elements */}
+    <div
+      className="min-h-screen flex flex-col md:flex-row font-sans relative overflow-hidden bg-cover bg-center"
+      style={{
+        backgroundImage: `url('/login.jpg')`,
+      }}
+    >
+      {/* Dark Overlay for readability over the background image */}
+      <div className="absolute inset-0 bg-black bg-opacity-50 z-0"></div>
+
+      {/* Background Elements (Grid, Blurs, Particles) - Z-index adjusted for image */}
       <div className="absolute inset-0 -z-10">
-        {/* Floating AI Particles */}
+        {/* Blueprint Grid Pattern */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(255, 255, 255, 0.2) 1px, transparent 1px)`,
+          backgroundSize: '40px 40px'
+        }}></div>
+
+        {/* Floating Construction Elements */}
+        <div className="absolute top-1/4 left-[10%] w-64 h-64 rounded-full bg-cyan-500/5 blur-3xl animate-pulse-slow"></div>
+        <div className="absolute bottom-1/3 right-[15%] w-80 h-80 rounded-full bg-blue-600/5 blur-3xl animate-pulse-slow animation-delay-2000"></div>
+
+        {/* Construction Particles */}
         <div className="absolute inset-0">
           {particles.map(particle => (
             <motion.div
               key={`particle-${particle.id}`}
-              className="absolute rounded-full bg-cyan-400"
+              className="absolute rounded-full bg-blue-400"
               style={{
                 width: `${particle.size}px`,
                 height: `${particle.size}px`,
                 left: `${particle.x}%`,
                 top: `${particle.y}%`,
-                boxShadow: '0 0 10px 2px rgba(59, 130, 246, 0.7)'
+                boxShadow: '0 0 8px 1px rgba(59, 130, 246, 0.5)'
               }}
               animate={{
-                x: [0, (Math.random() - 0.5) * 30],
-                y: [0, (Math.random() - 0.5) * 30]
+                x: [0, (Math.random() - 0.5) * 20],
+                y: [0, (Math.random() - 0.5) * 20]
               }}
               transition={{
-                duration: particle.speed * 2,
+                duration: particle.speed * 3,
                 repeat: Infinity,
                 repeatType: "reverse",
                 ease: "easeInOut"
@@ -73,49 +124,21 @@ const LoginPage = () => {
             />
           ))}
         </div>
-        
-        {/* Neural Network Connections */}
-        <div className="absolute inset-0 opacity-15">
-          {[...Array(40)].map((_, i) => (
-            <motion.div
-              key={`line-${i}`}
-              className="absolute bg-blue-500 rounded-full"
-              initial={{ 
-                width: 0,
-                height: 1,
-                x: Math.random() * 100 + '%',
-                y: Math.random() * 100 + '%'
-              }}
-              animate={{ 
-                width: Math.random() * 200 + 100 + 'px',
-                rotate: Math.random() * 360
-              }}
-              transition={{ 
-                duration: 4 + Math.random() * 4,
-                repeat: Infinity,
-                repeatType: "reverse"
-              }}
-            />
-          ))}
-        </div>
-        
-        {/* Large Floating Elements */}
-        <div className="absolute top-1/4 left-[10%] w-64 h-64 rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 blur-3xl animate-pulse-slow"></div>
-        <div className="absolute bottom-1/3 right-[15%] w-80 h-80 rounded-full bg-blue-600/10 blur-3xl animate-pulse-slow animation-delay-2000"></div>
       </div>
 
-      {/* Left Column - Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-4 md:p-12">
-        <motion.div 
+      {/* Left Column - Form (Glassmorphic) */}
+      <div className="w-full md:w-1/2 flex items-center justify-center p-4 md:p-12 z-10">
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="w-full max-w-md bg-[#1C2C65]/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 md:p-10 border border-[#2A3D7A] relative overflow-hidden"
+          className="w-full max-w-md bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-8 md:p-10 border border-white/20 relative overflow-hidden"
+          style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)' }}
         >
           {/* Back Button */}
-          <motion.button 
-            onClick={() => navigate('/')}
-            className="absolute top-5 left-5 flex items-center text-white bg-[#0A142F]/50 rounded-full p-2 hover:bg-[#0A142F] transition-all shadow-sm backdrop-blur-sm"
+          <motion.button
+            onClick={() => setCurrentPage('home')}
+            className="absolute top-5 left-5 flex items-center text-white bg-white/10 rounded-full p-2 hover:bg-white/20 transition-all shadow-sm backdrop-blur-sm"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -123,64 +146,66 @@ const LoginPage = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </motion.button>
-          
-          <motion.div 
+
+          <motion.div
             className="text-center mb-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            <motion.div 
+            <motion.div
               className="mx-auto mb-6"
               whileHover={{ rotate: [0, 5, -5, 0] }}
               transition={{ duration: 0.8 }}
             >
-              <div className="bg-gradient-to-br from-cyan-500 to-blue-500 w-16 h-16 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="bg-gradient-to-br from-[#0084C8]/80 to-[#005A9E]/80 w-16 h-16 rounded-xl flex items-center justify-center shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
             </motion.div>
-            <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 tracking-tight">
-              JTech AI
+            <h1 className="text-3xl font-bold text-white tracking-tight">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#00C2FF] to-[#0084C8]">
+                ConstructIQ
+              </span>
             </h1>
-            <p className="text-[#FFC947] mt-2 font-medium">
+            <p className="text-white mt-2 font-medium">
               {isLogin ? 'Sign in to your account' : 'Create a new account'}
             </p>
           </motion.div>
-          
+
           {/* Toggle Buttons */}
-          <motion.div 
-            className="flex mb-8 bg-[#0A142F]/50 backdrop-blur-sm rounded-xl p-1"
+          <motion.div
+            className="flex mb-8 bg-white/10 backdrop-blur-sm rounded-xl p-1 border border-white/20"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <button 
+            <button
               onClick={() => setIsLogin(true)}
               className={`flex-1 py-3 rounded-xl text-center font-medium transition-all duration-300 ${
-                isLogin 
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md' 
-                  : 'text-slate-300 hover:text-white'
+                isLogin
+                  ? 'bg-gradient-to-r from-[#0084C8] to-[#005A9E] text-white shadow-md'
+                  : 'text-white hover:bg-white/5'
               }`}
             >
               Sign In
             </button>
-            <button 
+            <button
               onClick={() => setIsLogin(false)}
               className={`flex-1 py-3 rounded-xl text-center font-medium transition-all duration-300 ${
-                !isLogin 
-                  ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md' 
-                  : 'text-slate-300 hover:text-white'
+                !isLogin
+                  ? 'bg-gradient-to-r from-[#0084C8] to-[#005A9E] text-white shadow-md'
+                  : 'text-white hover:bg-white/5'
               }`}
             >
               Sign Up
             </button>
           </motion.div>
-          
+
           {/* Form */}
-          <motion.form 
-            onSubmit={handleSubmit} 
+          <motion.form
+            onSubmit={handleSubmit}
             className="space-y-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -188,7 +213,7 @@ const LoginPage = () => {
           >
             {!isLogin && (
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">
+                <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
                   Full Name
                 </label>
                 <input
@@ -196,247 +221,242 @@ const LoginPage = () => {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#0A142F]/50 backdrop-blur-sm border border-[#2A3D7A] rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/70 transition-all duration-300 text-white placeholder-slate-400"
+                  className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00C2FF] transition-all duration-300 text-white placeholder-white/70"
                   placeholder="John Smith"
                   required={!isLogin}
                 />
               </div>
             )}
-            
+
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
                 Email Address
               </label>
               <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-[#0A142F]/50 backdrop-blur-sm border border-[#2A3D7A] rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/70 transition-all duration-300 text-white placeholder-slate-400"
-                placeholder="name@company.com"
-                required
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-2">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-[#0A142F]/50 backdrop-blur-sm border border-[#2A3D7A] rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/70 transition-all duration-300 text-white placeholder-slate-400"
-                placeholder="••••••••"
-                required
-              />
-            </div>
-            
-            {isLogin && (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 text-cyan-500 focus:ring-cyan-500 border-[#2A3D7A] rounded bg-[#0A142F]/50"
-                  />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-300">
-                    Remember me
-                  </label>
-                </div>
-                <div className="text-sm">
-                  <Link to="/" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
-                    Forgot password?
-                  </Link>
-                </div>
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00C2FF] transition-all duration-300 text-white placeholder-white/70"
+                  placeholder="name@company.com"
+                  required
+                />
               </div>
-            )}
-            
-            {error && (
-              <div className="text-red-400 text-sm font-medium py-2 px-4 bg-red-900/30 backdrop-blur-sm rounded-lg border border-red-500/30">
-                {error}
+
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00C2FF] transition-all duration-300 text-white placeholder-white/70"
+                  placeholder="••••••••"
+                  required
+                />
               </div>
-            )}
-            
-            <motion.button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white py-3 px-4 rounded-xl font-medium hover:opacity-90 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 shadow-lg flex items-center justify-center"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {loading ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  {isLogin ? 'Signing in...' : 'Creating account...'}
-                </>
-              ) : (
-                isLogin ? 'Sign In' : 'Create Account'
+
+              {isLogin && (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <input
+                      id="remember-me"
+                      name="remember-me"
+                      type="checkbox"
+                      className="h-4 w-4 text-[#00C2FF] focus:ring-[#00C2FF] border-white/20 rounded bg-white/5"
+                    />
+                    <label htmlFor="remember-me" className="ml-2 block text-sm text-white">
+                      Remember me
+                    </label>
+                  </div>
+                  <div className="text-sm">
+                    <button onClick={() => setCurrentPage('forgot-password')} className="font-medium text-[#00C2FF] hover:text-[#0084C8] transition-colors">
+                      Forgot password?
+                    </button>
+                  </div>
+                </div>
               )}
-            </motion.button>
-          </motion.form>
-          
-          {!isLogin && (
-            <p className="mt-6 text-center text-sm text-slate-400">
-              By signing up, you agree to our 
-              <a href="#" className="font-medium text-cyan-400 hover:text-cyan-300 ml-1 transition-colors">Terms of Service</a> and 
-              <a href="#" className="font-medium text-cyan-400 hover:text-cyan-300 ml-1 transition-colors">Privacy Policy</a>.
-            </p>
-          )}
-          
-          <motion.div 
-            className="mt-8 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <p className="text-slate-400">
-              {isLogin ? "Don't have an account? " : "Already have an account? "}
-              <button 
-                onClick={() => setIsLogin(!isLogin)}
-                className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
-              >
-                {isLogin ? "Sign up" : "Sign in"}
-              </button>
-            </p>
-          </motion.div>
-        </motion.div>
-      </div>
 
-      {/* Right Column - Content */}
-      <div className="hidden md:flex md:w-1/2 relative overflow-hidden items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0A142F]/90 to-[#1C2C65]/90 z-10"></div>
-        
-        {/* Floating AI Elements */}
-        <div className="absolute top-20 left-20 w-40 h-40 rounded-full bg-cyan-500/10 backdrop-blur-sm border border-cyan-500/20 animate-float"></div>
-        <div className="absolute bottom-20 right-20 w-32 h-32 rounded-full bg-blue-500/10 backdrop-blur-sm border border-blue-500/20 animate-float animation-delay-2000"></div>
-        <div className="absolute top-1/3 right-1/4 w-24 h-24 rounded-full bg-emerald-500/10 backdrop-blur-sm border border-emerald-500/20 animate-float animation-delay-4000"></div>
-        
-        {/* AI Neural Network Visualization */}
-        <div className="absolute inset-0 flex items-center justify-center z-20">
-          {[...Array(8)].map((_, i) => (
-            <motion.div
-              key={`node-${i}`}
-              className="absolute w-4 h-4 bg-cyan-500 rounded-full"
-              style={{
-                left: `${20 + (i * 10)}%`,
-                top: `${30 + Math.sin(i) * 20}%`
-              }}
-              animate={{ 
-                boxShadow: [
-                  '0 0 0 0 rgba(59, 130, 246, 0.7)',
-                  '0 0 0 10px rgba(59, 130, 246, 0)'
-                ] 
-              }}
-              transition={{ 
-                duration: 2, 
-                repeat: Infinity,
-                delay: i * 0.2
-              }}
-            />
-          ))}
-        </div>
-        
-        {/* Content */}
-        <motion.div 
-          className="max-w-lg text-center z-30 p-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-        >
-          <motion.div 
-            className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 mb-10 inline-block"
-            whileHover={{ 
-              scale: 1.05,
-              rotate: [0, 2, -2, 0]
-            }}
-            transition={{ duration: 0.8 }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-            </svg>
-          </motion.div>
-          
-          <h2 className="text-4xl font-bold mb-6 text-white">
-            Where <span className="text-cyan-400">AI</span> Meets <span className="text-[#FFC947]">Construction</span>
-          </h2>
-          <p className="text-xl text-slate-300 mb-8 leading-relaxed">
-            JTech AI transforms architectural design with predictive analytics, generative modeling, and real-time optimization.
-          </p>
-          
-          <div className="flex justify-center space-x-6">
-            {[
-              { icon: 'shield', label: 'Secure', color: 'text-cyan-400' },
-              { icon: 'brain', label: 'Intelligent', color: 'text-amber-400' },
-              { icon: 'scale', label: 'Scalable', color: 'text-emerald-400' }
-            ].map((feature, index) => (
-              <motion.div 
-                key={index}
-                className="text-center"
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="bg-white/10 backdrop-blur-sm w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-3 border border-white/20">
-                  {feature.icon === 'shield' ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-8 w-8 ${feature.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                    </svg>
-                  ) : feature.icon === 'brain' ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-8 w-8 ${feature.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-8 w-8 ${feature.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-                    </svg>
-                  )}
+              {error && (
+                <div className="text-red-300 text-sm font-medium py-2 px-4 bg-red-900/40 backdrop-blur-sm rounded-lg border border-red-500/40">
+                  {error}
                 </div>
-                <span className="font-medium text-slate-300">{feature.label}</span>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </div>
-      
-      {/* Global styles */}
-      <style jsx global>{`
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 0.1; }
-          50% { opacity: 0.2; }
-        }
-        
-        .animate-pulse-slow {
-          animation: pulse-slow 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-15px); }
-        }
-        
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-        
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
-    </div>
-  );
-};
+              )}
 
-export default LoginPage;
+              <motion.button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-[#0084C8] to-[#005A9E] text-white py-3 px-4 rounded-xl font-medium hover:opacity-90 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00C2FF] shadow-lg flex items-center justify-center"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {loading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {isLogin ? 'Signing in...' : 'Creating account...'}
+                  </>
+                ) : (
+                  isLogin ? 'Sign In' : 'Create Account'
+                )}
+              </motion.button>
+            </motion.form>
+
+            {!isLogin && (
+              <p className="mt-6 text-center text-sm text-white/70">
+                By signing up, you agree to our
+                <a href="#" className="font-medium text-[#00C2FF] hover:text-[#0084C8] ml-1 transition-colors">Terms of Service</a> and
+                <a href="#" className="font-medium text-[#00C2FF] hover:text-[#0084C8] ml-1 transition-colors">Privacy Policy</a>.
+              </p>
+            )}
+
+            <motion.div
+              className="mt-8 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              <p className="text-white/70">
+                {isLogin ? "Don't have an account? " : "Already have an account? "}
+                <button
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="font-medium text-[#00C2FF] hover:text-[#0084C8] transition-colors"
+                >
+                  {isLogin ? "Sign up" : "Sign in"}
+                </button>
+              </p>
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Right Column - Content (Glassmorphic) */}
+        <div className="hidden md:flex md:w-1/2 relative overflow-hidden items-center justify-center p-12 z-10">
+          <motion.div
+            className="max-w-lg text-center bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-8 border border-white/20"
+            style={{ boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)' }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+          >
+            <motion.div
+              className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl border border-white/20 mb-10 inline-block"
+              whileHover={{
+                scale: 1.05,
+                rotate: [0, 2, -2, 0]
+              }}
+              transition={{ duration: 0.8 }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-[#00C2FF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </motion.div>
+
+            <h2 className="text-4xl font-bold mb-6 text-white">
+              <span className="text-[#00C2FF]">Advanced Construction</span> Intelligence
+            </h2>
+            <p className="text-white/80 mb-8 leading-relaxed">
+              Revolutionize your construction projects with AI-powered estimation, planning, and resource management.
+            </p>
+
+            <div className="flex justify-center space-x-6">
+              {[
+                { icon: '📊', label: 'Precision Estimation', color: 'text-[#00C2FF]' },
+                { icon: '🏗️', label: '3D Modeling', color: 'text-[#FFB81C]' },
+                { icon: '⚡', label: 'Real-time Insights',
+                  color: 'text-[#00C2FF]'
+                }
+              ].map((feature, index) => (
+                <motion.div
+                  key={index}
+                  className="text-center"
+                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="bg-white/10 backdrop-blur-sm w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-3 border border-white/20">
+                    <span className={`text-2xl ${feature.color}`}>{feature.icon}</span>
+                  </div>
+                  <span className="font-medium text-white/80">{feature.label}</span>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="mt-12 grid grid-cols-3 gap-4">
+              {[
+                { label: '2D Takeoff', color: 'bg-[#0084C8]/60' },
+                { label: 'BIM', color: 'bg-[#005A9E]/60' },
+                { label: 'AI Analytics', color: 'bg-[#00C2FF]/60' }
+              ].map((item, index) => (
+                <motion.div
+                  key={index}
+                  className={`${item.color} py-2 px-4 rounded-lg text-white font-medium`}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {item.label}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Global styles */}
+        <style>{`
+          @keyframes pulse-slow {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.2; }
+          }
+
+          .animate-pulse-slow {
+            animation: pulse-slow 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+          }
+
+          .animation-delay-2000 {
+            animation-delay: 2s;
+          }
+
+          @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+          }
+
+          .animate-float {
+            animation: float 6s ease-in-out infinite;
+          }
+        `}</style>
+      </div>
+    );
+  };
+
+  // Placeholder for Dashboard Page
+  const DashboardPage = ({ setCurrentPage }) => {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white text-3xl p-4">
+        <h1 className="text-5xl font-bold mb-8">Welcome to your Dashboard!</h1>
+        <p className="text-xl mb-8 text-gray-400">This is a placeholder page.</p>
+        <button
+          onClick={() => setCurrentPage('login')}
+          className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
+        >
+          Go back to Login
+        </button>
+      </div>
+    );
+  };
+
+  // Main App component to handle simple routing
+  const App = () => {
+    const [currentPage, setCurrentPage] = useState('login');
+
+    return (
+      <>
+        {currentPage === 'login' && <LoginPage setCurrentPage={setCurrentPage} />}
+        {currentPage === 'dashboard' && <DashboardPage setCurrentPage={setCurrentPage} />}
+      </>
+    );
+  };
+
+  export default App;

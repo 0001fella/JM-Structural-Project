@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FaInfoCircle, FaPercentage, FaCalculator } from 'react-icons/fa';
+import { FaPercentage, FaInfoCircle, FaChartLine, FaMoneyBillWave } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const ProfitCalculator = ({ baseCost, onTotalUpdate }) => {
   const [profitMargin, setProfitMargin] = useState(15);
@@ -28,52 +29,37 @@ const ProfitCalculator = ({ baseCost, onTotalUpdate }) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
     }).format(value);
   };
 
   return (
-    <div className="bg-white border border-gray-300 rounded-lg shadow-md p-6 mb-6">
-      <div className="flex items-center mb-4 text-gray-700">
-        <FaCalculator className="mr-2 text-blue-600" />
-        <h3 className="text-lg font-bold">Commercial Margin Calculator</h3>
-        <div className="ml-auto flex items-center">
-          <span 
-            className="text-xs text-gray-500 cursor-help mr-2 flex items-center"
-            title="Toggle overhead inclusion"
-          >
-            <input
-              type="checkbox"
-              checked={includeOverhead}
-              onChange={() => setIncludeOverhead(!includeOverhead)}
-              className="mr-1 h-4 w-4 text-blue-600"
-            />
-            Include OH
-          </span>
-          <FaInfoCircle 
-            className="text-gray-400 cursor-help" 
-            title="Profit calculated on base cost + overhead" 
-          />
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden"
+    >
+      <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-4 flex items-center justify-between">
+        <h2 className="text-xl font-bold text-white">Profit Calculator</h2>
+        <div className="bg-blue-800/30 rounded-full p-2">
+          <FaChartLine className="text-white text-lg" />
         </div>
       </div>
-
-      {/* Overhead Control */}
-      {includeOverhead && (
-        <div className="mb-5">
-          <div className="flex justify-between mb-2">
-            <label className="font-medium text-gray-700 flex items-center">
-              Overhead Percentage
-            </label>
+      
+      <div className="p-5">
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-3">
+            <label className="font-medium text-gray-700">Profit Margin</label>
             <div className="flex items-center">
               <input
                 type="number"
                 min="0"
-                max="50"
+                max="100"
                 step="0.25"
                 className="w-24 input-field border border-gray-300 rounded px-2 py-1 text-right"
-                value={overhead}
-                onChange={(e) => setOverhead(Number(e.target.value))}
+                value={profitMargin}
+                onChange={(e) => setProfitMargin(Number(e.target.value))}
               />
               <FaPercentage className="ml-1 text-gray-500" size={12} />
             </div>
@@ -81,95 +67,112 @@ const ProfitCalculator = ({ baseCost, onTotalUpdate }) => {
           <input
             type="range"
             min="0"
-            max="30"
+            max="50"
             step="0.25"
-            className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-            value={overhead}
-            onChange={(e) => setOverhead(Number(e.target.value))}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+            value={profitMargin}
+            onChange={(e) => setProfitMargin(Number(e.target.value))}
           />
+          <div className="flex justify-between mt-1 text-xs text-gray-500">
+            <span>0%</span>
+            <span>10%</span>
+            <span>20%</span>
+            <span>30%</span>
+            <span>40%</span>
+            <span>50%</span>
+          </div>
         </div>
-      )}
 
-      {/* Profit Margin Control */}
-      <div className="mb-5">
-        <div className="flex justify-between mb-2">
-          <label className="font-medium text-gray-700">Profit Margin</label>
-          <div className="flex items-center">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <label className="font-medium text-gray-700 flex items-center">
+              Include Overhead
+              <FaInfoCircle className="ml-2 text-gray-400" title="Overhead costs include administrative expenses" />
+            </label>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
             <input
-              type="number"
-              min="0"
-              max="100"
-              step="0.25"
-              className="w-24 input-field border border-gray-300 rounded px-2 py-1 text-right"
-              value={profitMargin}
-              onChange={(e) => setProfitMargin(Number(e.target.value))}
+              type="checkbox"
+              checked={includeOverhead}
+              onChange={() => setIncludeOverhead(!includeOverhead)}
+              className="sr-only peer"
             />
-            <FaPercentage className="ml-1 text-gray-500" size={12} />
-          </div>
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          </label>
         </div>
-        <input
-          type="range"
-          min="0"
-          max="50"
-          step="0.25"
-          className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-          value={profitMargin}
-          onChange={(e) => setProfitMargin(Number(e.target.value))}
-        />
-        <div className="flex justify-between mt-1 text-xs text-gray-500">
-          <span>0%</span>
-          <span>10%</span>
-          <span>20%</span>
-          <span>30%</span>
-          <span>40%</span>
-          <span>50%</span>
-        </div>
-      </div>
 
-      {/* Calculation Breakdown */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-        <div className="grid grid-cols-2 gap-y-3 text-sm">
-          <div className="text-gray-600">Base Cost:</div>
-          <div className="text-right font-mono">{formatCurrency(baseCost)}</div>
-          
-          {includeOverhead && (
-            <>
-              <div className="text-gray-600 flex items-center">
-                Overhead ({overhead}%):
+        {includeOverhead && (
+          <div className="mb-6">
+            <div className="flex justify-between items-center mb-3">
+              <label className="font-medium text-gray-700">Overhead Percentage</label>
+              <div className="flex items-center">
+                <input
+                  type="number"
+                  min="0"
+                  max="50"
+                  step="0.25"
+                  className="w-24 input-field border border-gray-300 rounded px-2 py-1 text-right"
+                  value={overhead}
+                  onChange={(e) => setOverhead(Number(e.target.value))}
+                />
+                <FaPercentage className="ml-1 text-gray-500" size={12} />
               </div>
-              <div className="text-right font-mono">{formatCurrency(overheadAmount)}</div>
-              
-              <div className="text-gray-600">Subtotal:</div>
-              <div className="text-right font-mono">{formatCurrency(subtotal)}</div>
-            </>
-          )}
-          
-          <div className="text-gray-600 flex items-center">
-            Profit ({profitMargin}%):
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="30"
+              step="0.25"
+              className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              value={overhead}
+              onChange={(e) => setOverhead(Number(e.target.value))}
+            />
           </div>
-          <div className="text-right font-mono">{formatCurrency(profitAmount)}</div>
-          
-          <div className="col-span-2 border-t border-gray-300 my-2 pt-2">
-            <div className="flex justify-between font-semibold">
-              <span className="text-gray-800">Contract Sum:</span>
-              <span className="text-right font-mono text-blue-700">
+        )}
+
+        <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-5 mb-6">
+          <div className="grid grid-cols-1 gap-3">
+            <div className="flex justify-between items-center pb-2 border-b border-gray-200">
+              <div className="text-gray-600">Base Cost:</div>
+              <div className="font-medium">{formatCurrency(baseCost)}</div>
+            </div>
+            
+            {includeOverhead && (
+              <>
+                <div className="flex justify-between items-center">
+                  <div className="text-gray-600">Overhead ({overhead}%):</div>
+                  <div className="font-medium">{formatCurrency(overheadAmount)}</div>
+                </div>
+                
+                <div className="flex justify-between items-center pb-2 border-b border-gray-200">
+                  <div className="text-gray-600">Subtotal:</div>
+                  <div className="font-medium">{formatCurrency(subtotal)}</div>
+                </div>
+              </>
+            )}
+            
+            <div className="flex justify-between items-center">
+              <div className="text-gray-600">Profit ({profitMargin}%):</div>
+              <div className="font-medium">{formatCurrency(profitAmount)}</div>
+            </div>
+            
+            <div className="flex justify-between items-center pt-3 mt-2 border-t border-gray-300">
+              <div className="font-semibold text-gray-800">Contract Sum:</div>
+              <div className="font-bold text-xl text-blue-700">
                 {formatCurrency(total)}
-              </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Summary Row */}
-      <div className="mt-4 flex justify-between items-center text-sm">
-        <div className="text-gray-600">
-          Margin: {profitMargin}% | OH: {includeOverhead ? `${overhead}%` : 'Excluded'}
-        </div>
-        <div className="font-bold text-lg text-blue-800">
-          {formatCurrency(total)}
+        <div className="bg-blue-50 p-4 rounded-lg flex items-center">
+          <FaMoneyBillWave className="text-blue-600 text-xl mr-3" />
+          <p className="text-blue-700">
+            Increasing profit margin by 5% would add {formatCurrency(baseCost * 0.05)} to your contract sum
+          </p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

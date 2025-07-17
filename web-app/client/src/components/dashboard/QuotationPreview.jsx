@@ -1,43 +1,65 @@
-// src/components/quotation/QuotationPreview.jsx
 import React, { useState, useMemo } from 'react';
 import { useQuotation } from '../../context/QuotationContext';
 import { 
-  Box, 
-  Typography, 
-  Button, 
-  IconButton, 
-  Paper, 
-  Grid,
-  Tabs, 
-  Tab, 
-  Card, 
-  CardContent,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Divider,
-  LinearProgress,
-  CircularProgress,
-  Tooltip
-} from '@mui/material';
+  motion, 
+  AnimatePresence 
+} from 'framer-motion';
 import { 
-  Download, 
-  Expand, 
-  Edit, 
-  PieChart, 
-  ChevronRight,
-  Timeline,
-  Summarize,
-  Construction
-} from '@mui/icons-material';
-import { motion } from 'framer-motion';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+  FaDownload, 
+  FaExpand, 
+  FaChartPie,
+  FaTimes,
+  FaChevronLeft,
+  FaChevronRight,
+  FaRegClock,
+  FaRegListAlt,
+  FaRegBuilding,
+  FaRegFileAlt,
+  FaRegLightbulb
+} from 'react-icons/fa';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 
 const QuotationPreview = () => {
   const { quotationData, aiResults } = useQuotation();
   const [expandedView, setExpandedView] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [currentProject, setCurrentProject] = useState(0);
+
+  const projects = [
+    { 
+      id: '1', 
+      name: 'Urban Tower Complex', 
+      lastUpdated: '2 days ago', 
+      status: 'design', 
+      progress: 45, 
+      aiRecommendations: 12,
+      budget: '$12.8M',
+      timeline: '18 months',
+      team: 8
+    },
+    { 
+      id: '2', 
+      name: 'Residential High-Rise', 
+      lastUpdated: '1 week ago', 
+      status: 'estimation', 
+      progress: 78, 
+      aiRecommendations: 8,
+      budget: '$8.5M',
+      timeline: '12 months',
+      team: 6
+    },
+    { 
+      id: '3', 
+      name: 'Commercial Plaza', 
+      lastUpdated: '3 weeks ago', 
+      status: 'completed', 
+      progress: 100, 
+      aiRecommendations: 0,
+      budget: '$15.2M',
+      timeline: '24 months',
+      team: 12
+    }
+  ];
 
   // Memoize derived data for performance
   const costBreakdown = useMemo(() => {
@@ -64,17 +86,20 @@ const QuotationPreview = () => {
   }, [aiResults]);
 
   const tabConfig = [
-    { id: 'summary', label: 'Summary', icon: <Summarize fontSize="small" /> },
-    { id: 'breakdown', label: 'Breakdown', icon: <PieChart fontSize="small" /> },
-    { id: 'timeline', label: 'Timeline', icon: <Timeline fontSize="small" /> },
-    { id: 'materials', label: 'Materials', icon: <Construction fontSize="small" /> }
+    { id: 'summary', label: 'Summary', icon: <FaRegListAlt /> },
+    { id: 'breakdown', label: 'Breakdown', icon: <FaChartPie /> },
+    { id: 'timeline', label: 'Timeline', icon: <FaRegClock /> },
+    { id: 'materials', label: 'Materials', icon: <FaRegBuilding /> }
   ];
 
   if (!aiResults) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight={300}>
-        <CircularProgress size={60} thickness={4} />
-      </Box>
+      <div className="flex justify-center items-center min-h-96 bg-white rounded-2xl shadow-lg border border-gray-200">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading project data...</p>
+        </div>
+      </div>
     );
   }
 
@@ -84,441 +109,256 @@ const QuotationPreview = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Paper
-        elevation={expandedView ? 6 : 3}
-        sx={{
-          borderRadius: 3,
-          overflow: 'hidden',
-          position: expandedView ? 'fixed' : 'relative',
-          top: expandedView ? 0 : 'auto',
-          left: expandedView ? 0 : 'auto',
-          width: expandedView ? '100vw' : '100%',
-          height: expandedView ? '100vh' : 'auto',
-          zIndex: expandedView ? 1300 : 1,
-          m: expandedView ? 0 : undefined,
-          display: 'flex',
-          flexDirection: 'column',
-          maxHeight: '100%'
-        }}
+      <div className={`bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200 ${
+        expandedView ? 'fixed inset-0 z-50 m-0' : 'relative'
+      }`}
       >
         {/* Header */}
-        <Box
-          sx={{
-            background: 'linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%)',
-            p: 3,
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}
-        >
-          <Box>
-            <Typography variant="h5" fontWeight={600} display="flex" alignItems="center" gap={1}>
-              <PieChart color="primary" />
-              Project Summary
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              AI-generated quotation preview
-            </Typography>
-          </Box>
+        <div className="bg-gradient-to-r from-blue-600 to-cyan-500 p-4 flex items-center justify-between">
+          <div className="flex items-center">
+            <div className="bg-blue-800/30 p-2 rounded-lg mr-3">
+              <FaRegFileAlt className="text-white" />
+            </div>
+            <h2 className="text-xl font-bold text-white">Project Quotation</h2>
+          </div>
           
-          <Box display="flex" gap={1}>
-            <Tooltip title={expandedView ? "Minimize" : "Expand"}>
-              <IconButton 
-                onClick={() => setExpandedView(!expandedView)}
-                color="default"
-                sx={{ bgcolor: 'background.paper' }}
-              >
-                <Expand fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<Download />}
-              sx={{
-                boxShadow: '0 4px 6px rgba(11, 92, 214, 0.12)',
-                '&:hover': {
-                  boxShadow: '0 6px 8px rgba(11, 92, 214, 0.18)'
-                }
-              }}
+          <div className="flex items-center space-x-2">
+            <button 
+              onClick={() => setExpandedView(!expandedView)}
+              className="p-2 text-white hover:bg-blue-700/30 rounded-full"
             >
-              Export
-            </Button>
-          </Box>
-        </Box>
+              <FaExpand />
+            </button>
+            <button className="p-2 text-white hover:bg-blue-700/30 rounded-full">
+              <FaDownload />
+            </button>
+            {expandedView && (
+              <button 
+                onClick={() => setExpandedView(false)}
+                className="p-2 text-white hover:bg-blue-700/30 rounded-full"
+              >
+                <FaTimes />
+              </button>
+            )}
+          </div>
+        </div>
+        
+        {/* Project Navigation */}
+        <div className="bg-gray-50 border-b border-gray-200 p-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <button 
+                onClick={() => setCurrentProject(prev => Math.max(0, prev - 1))}
+                className="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-30"
+                disabled={currentProject === 0}
+              >
+                <FaChevronLeft />
+              </button>
+              <span className="mx-4 text-gray-700 font-medium">
+                {projects[currentProject].name}
+              </span>
+              <button 
+                onClick={() => setCurrentProject(prev => Math.min(projects.length - 1, prev + 1))}
+                className="p-2 text-gray-500 hover:text-gray-700 disabled:opacity-30"
+                disabled={currentProject === projects.length - 1}
+              >
+                <FaChevronRight />
+              </button>
+            </div>
+            <div className="flex">
+              {projects.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentProject(idx)}
+                  className={`w-2 h-2 rounded-full mx-1 ${idx === currentProject ? 'bg-blue-600' : 'bg-gray-300'}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* Tabs */}
-        <Tabs
-          value={activeTab}
-          onChange={(_, newValue) => setActiveTab(newValue)}
-          variant="fullWidth"
-          sx={{
-            borderBottom: '1px solid',
-            borderColor: 'divider',
-            bgcolor: 'background.default'
-          }}
-        >
-          {tabConfig.map((tab, index) => (
-            <Tab 
-              key={tab.id}
-              label={tab.label}
-              icon={tab.icon}
-              iconPosition="start"
-              sx={{ 
-                minHeight: 60,
-                fontWeight: activeTab === index ? 600 : 500,
-                color: activeTab === index ? 'primary.main' : 'text.secondary'
-              }}
-            />
-          ))}
-        </Tabs>
+        <div className="border-b border-gray-200">
+          <div className="flex">
+            {tabConfig.map((tab, index) => (
+              <button
+                key={tab.id}
+                className={`flex items-center px-5 py-3 font-medium relative ${
+                  activeTab === index 
+                    ? 'text-blue-600 border-b-2 border-blue-600' 
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+                onClick={() => setActiveTab(index)}
+              >
+                <span className="mr-2">{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Content */}
-        <Box sx={{ 
-          p: 3, 
-          overflowY: 'auto', 
-          flex: 1,
-          bgcolor: 'background.default'
-        }}>
+        <div className="p-6">
           {/* Summary Tab */}
           {activeTab === 0 && (
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={4}>
-                <StatCard
-                  title="Total Area"
-                  value={`${aiResults.dimensions.area} sq ft`}
-                  progress={85}
-                  color="primary"
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <StatCard
-                  title="Rooms"
-                  value={aiResults.dimensions.rooms}
-                  progress={70}
-                  color="success"
-                />
-              </Grid>
-              <Grid item xs={12} md={4}>
-                <StatCard
-                  title="Base Cost"
-                  value={`$${aiResults.costEstimate.toLocaleString()}`}
-                  progress={60}
-                  color="secondary"
-                />
-              </Grid>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-xl p-5">
+                <h3 className="font-semibold text-gray-800 mb-3">Project Overview</h3>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-600">Project Name</p>
+                    <p className="font-medium">{projects[currentProject].name}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Budget</p>
+                    <p className="font-medium text-blue-700">{projects[currentProject].budget}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Timeline</p>
+                    <p className="font-medium">{projects[currentProject].timeline}</p>
+                  </div>
+                </div>
+              </div>
               
-              <Grid item xs={12}>
-                <Card variant="outlined">
-                  <CardContent>
-                    <Box display="flex" justifyContent="space-between" mb={2}>
-                      <Typography variant="subtitle1" fontWeight={600}>
-                        Key Materials
-                      </Typography>
-                      <Button 
-                        color="primary" 
-                        size="small" 
-                        endIcon={<ChevronRight />}
-                      >
-                        View all
-                      </Button>
-                    </Box>
-                    
-                    <List disablePadding>
-                      {aiResults.dimensions.materials.slice(0, 3).map((material, index) => (
-                        <motion.div
-                          key={index}
-                          whileHover={{ y: -3 }}
-                          style={{ width: '100%' }}
-                        >
-                          <ListItem 
-                            sx={{
-                              bgcolor: 'background.paper',
-                              borderRadius: 2,
-                              mb: 1,
-                              boxShadow: 1,
-                              '&:hover': {
-                                bgcolor: 'action.hover'
-                              }
-                            }}
-                          >
-                            <ListItemIcon>
-                              <Box
-                                width={40}
-                                height={40}
-                                borderRadius={1}
-                                bgcolor="primary.light"
-                                display="flex"
-                                alignItems="center"
-                                justifyContent="center"
-                              >
-                                <Box 
-                                  width={8} 
-                                  height={8} 
-                                  borderRadius="50%" 
-                                  bgcolor="primary.main" 
-                                />
-                              </Box>
-                            </ListItemIcon>
-                            <ListItemText
-                              primary={material.name}
-                              secondary={material.category}
-                              primaryTypographyProps={{ fontWeight: 500 }}
-                            />
-                            <Typography fontWeight={600}>
-                              {material.quantity} {material.unit}
-                            </Typography>
-                          </ListItem>
-                        </motion.div>
-                      ))}
-                    </List>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
+              <div className="bg-gradient-to-br from-cyan-50 to-white border border-cyan-100 rounded-xl p-5">
+                <h3 className="font-semibold text-gray-800 mb-3">AI Analysis</h3>
+                <div className="flex items-center mb-4">
+                  <div className="bg-cyan-100 p-2 rounded-full mr-3">
+                    <FaRegLightbulb className="text-cyan-600" />
+                  </div>
+                  <p className="text-cyan-700">
+                    {projects[currentProject].aiRecommendations} recommendations available
+                  </p>
+                </div>
+                <button className="w-full py-2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg font-medium hover:opacity-90">
+                  View Recommendations
+                </button>
+              </div>
+              
+              <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-5">
+                <h3 className="font-semibold text-gray-800 mb-3">Progress</h3>
+                <div className="mb-3">
+                  <div className="flex justify-between mb-1">
+                    <span className="text-sm text-gray-600">Overall Progress</span>
+                    <span className="text-sm font-medium">{projects[currentProject].progress}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-gradient-to-r from-blue-500 to-cyan-400 h-2 rounded-full" 
+                      style={{ width: `${projects[currentProject].progress}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+                    <span>Estimation Phase</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Breakdown Tab */}
           {activeTab === 1 && (
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Card variant="outlined" sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Box display="flex" justifyContent="space-between" mb={3}>
-                      <Typography variant="subtitle1" fontWeight={600}>
-                        Cost Breakdown
-                      </Typography>
-                      <Button 
-                        color="primary" 
-                        size="small"
-                        startIcon={<Edit fontSize="small" />}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-5">
+                <h3 className="font-semibold text-gray-800 mb-4">Cost Breakdown</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={costBreakdown}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={100}
+                        paddingAngle={2}
+                        dataKey="amount"
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                       >
-                        Edit breakdown
-                      </Button>
-                    </Box>
-                    
-                    <Box height={300} position="relative">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                          <Pie
-                            data={costBreakdown}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={60}
-                            outerRadius={100}
-                            paddingAngle={2}
-                            dataKey="amount"
-                          >
-                            {costBreakdown.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                          </Pie>
-                        </PieChart>
-                      </ResponsiveContainer>
-                      <Box
-                        position="absolute"
-                        top="50%"
-                        left="50%"
-                        sx={{ transform: 'translate(-50%, -50%)' }}
-                        textAlign="center"
-                      >
-                        <Typography variant="body2" color="text.secondary">
-                          Total
-                        </Typography>
-                        <Typography variant="h6" fontWeight={600}>
-                          ${quotationData?.total?.toLocaleString() || '0'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
+                        {costBreakdown.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
               
-              <Grid item xs={12} md={6}>
-                <Card variant="outlined" sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Typography variant="subtitle1" fontWeight={600} mb={3}>
-                      Cost Distribution
-                    </Typography>
-                    
-                    <List disablePadding>
-                      {costBreakdown.map((item, index) => (
-                        <React.Fragment key={index}>
-                          <ListItem sx={{ py: 1.5 }}>
-                            <ListItemIcon>
-                              <Box 
-                                width={12} 
-                                height={12} 
-                                borderRadius="50%" 
-                                bgcolor={item.color} 
-                              />
-                            </ListItemIcon>
-                            <ListItemText primary={item.category} />
-                            <Box display="flex" gap={2} alignItems="center">
-                              <Typography fontWeight={600}>
-                                ${item.amount.toLocaleString()}
-                              </Typography>
-                              <Typography color="text.secondary">
-                                {Math.round((item.amount / quotationData?.total) * 100)}%
-                              </Typography>
-                            </Box>
-                          </ListItem>
-                          {index < costBreakdown.length - 1 && <Divider />}
-                        </React.Fragment>
-                      ))}
-                    </List>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
+              <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-5">
+                <h3 className="font-semibold text-gray-800 mb-4">Cost Distribution</h3>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={costBreakdown}>
+                      <XAxis dataKey="category" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']} />
+                      <Legend />
+                      <Bar dataKey="amount" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Timeline Tab */}
           {activeTab === 2 && (
-            <Card variant="outlined">
-              <CardContent>
-                <Box 
-                  display="flex" 
-                  justifyContent="space-between" 
-                  mb={3}
-                  flexWrap="wrap"
-                  gap={2}
-                >
-                  <Box>
-                    <Typography variant="subtitle1" fontWeight={600}>
-                      Project Timeline
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Estimated Duration
-                    </Typography>
-                    <Typography variant="h5" fontWeight={700}>
-                      {timeEstimate.weeks} weeks, {timeEstimate.days} days
-                    </Typography>
-                  </Box>
-                  <Button 
-                    color="primary" 
-                    size="small"
-                    startIcon={<Edit fontSize="small" />}
-                  >
-                    Adjust timeline
-                  </Button>
-                </Box>
-                
-                <Box sx={{ width: '100%' }}>
-                  {timeEstimate.phases.map((phase, index) => (
-                    <Box key={index} mb={3}>
-                      <Box display="flex" justifyContent="space-between" mb={1}>
-                        <Typography fontWeight={500}>{phase.name}</Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {phase.duration}
-                        </Typography>
-                      </Box>
-                      <LinearProgress 
-                        variant="determinate" 
-                        value={phase.progress} 
-                        sx={{ 
-                          height: 8, 
-                          borderRadius: 4,
-                          backgroundColor: 'action.disabledBackground',
-                          '& .MuiLinearProgress-bar': {
-                            borderRadius: 4,
-                            backgroundColor: 'primary.main'
-                          }
-                        }} 
-                      />
-                    </Box>
-                  ))}
-                </Box>
-              </CardContent>
-            </Card>
+            <div className="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-xl p-5">
+              <h3 className="font-semibold text-gray-800 mb-6">Project Timeline</h3>
+              
+              <div className="space-y-6">
+                {timeEstimate.phases.map((phase, index) => (
+                  <div key={index}>
+                    <div className="flex justify-between items-center mb-2">
+                      <h4 className="font-medium text-gray-800">{phase.name}</h4>
+                      <span className="text-sm text-gray-600">{phase.duration}</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div 
+                        className="bg-gradient-to-r from-blue-500 to-cyan-400 h-2.5 rounded-full" 
+                        style={{ width: `${phase.progress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center">
+                  <FaRegLightbulb className="text-blue-600 mr-3" />
+                  <p className="text-blue-700">
+                    AI recommends overlapping foundation and framing phases to save 2 weeks
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
-        </Box>
+        </div>
 
         {/* Footer */}
-        <Box
-          sx={{
-            background: 'linear-gradient(135deg, #0d47a1 0%, #1976d2 100%)',
-            p: 3,
-            color: 'white'
-          }}
-        >
-          <Grid container alignItems="center" spacing={2}>
-            <Grid item xs={12} md={6}>
-              <Typography variant="subtitle2" color="rgba(255, 255, 255, 0.8)">
-                AI-Generated Quotation Total
-              </Typography>
-              <Typography variant="h5" fontWeight={700}>
-                ${quotationData?.total?.toLocaleString() || '0'}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-              <Button
-                variant="outlined"
-                sx={{
-                  color: 'white',
-                  borderColor: 'rgba(255, 255, 255, 0.3)',
-                  '&:hover': {
-                    borderColor: 'white',
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)'
-                  }
-                }}
-              >
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border-t border-gray-200 p-5">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div>
+              <p className="text-sm text-gray-600">Total Estimated Cost</p>
+              <p className="text-2xl font-bold text-blue-700">
+                ${(quotationData?.total || 0).toLocaleString()}
+              </p>
+            </div>
+            <div className="flex space-x-3 mt-4 md:mt-0">
+              <button className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50">
                 Save Draft
-              </Button>
-              <Button
-                variant="contained"
-                color="secondary"
-                sx={{
-                  bgcolor: 'white',
-                  color: 'primary.dark',
-                  fontWeight: 600,
-                  '&:hover': {
-                    bgcolor: 'grey.100'
-                  }
-                }}
-              >
-                View Full Details
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </Paper>
+              </button>
+              <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-lg font-medium hover:from-blue-700 hover:to-cyan-600">
+                Export Quotation
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </motion.div>
-  );
-};
-
-// Stat Card Sub-component
-const StatCard = ({ title, value, progress, color = 'primary' }) => {
-  const colorMap = {
-    primary: { bg: 'primary.light', bar: 'primary.main' },
-    success: { bg: 'success.light', bar: 'success.main' },
-    secondary: { bg: 'secondary.light', bar: 'secondary.main' }
-  };
-
-  return (
-    <Card variant="outlined" sx={{ height: '100%' }}>
-      <CardContent>
-        <Typography variant="body2" color="text.secondary" mb={1}>
-          {title}
-        </Typography>
-        <Typography variant="h5" fontWeight={700} mb={2}>
-          {value}
-        </Typography>
-        <Box sx={{ width: '100%', bgcolor: 'action.disabledBackground', borderRadius: 4 }}>
-          <Box 
-            sx={{ 
-              height: 8, 
-              borderRadius: 4,
-              width: `${progress}%`,
-              bgcolor: colorMap[color].bar
-            }} 
-          />
-        </Box>
-      </CardContent>
-    </Card>
   );
 };
 

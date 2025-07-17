@@ -1,79 +1,80 @@
-// src/context/AuthContext.js
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+// src/context/AuthContext.jsx
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { loginUser, registerUser } from '../services/auth';
 
 const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
+export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  
-  // Check localStorage for existing session on initial load
+
+  // Load user from localStorage on mount
   useEffect(() => {
-    const user = localStorage.getItem('quantbuild_user');
-    if (user) {
-      setCurrentUser(JSON.parse(user));
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        setCurrentUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error('Failed to parse stored user:', error);
+      localStorage.removeItem('user');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
-  
+
   // Login function
-  const login = (email, password) => {
-    // In a real app, this would be an API call
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const user = {
-          id: 'user_12345',
-          name: email.split('@')[0],
-          email,
-          role: 'admin'
-        };
-        setCurrentUser(user);
-        localStorage.setItem('quantbuild_user', JSON.stringify(user));
-        resolve(user);
-      }, 800);
-    });
+  const login = async (credentials) => {
+    try {
+      const userData = await loginUser(credentials);
+      if (!userData || !userData.token) {
+        throw new Error('Invalid user data from server');
+      }
+      setCurrentUser(userData);
+      localStorage.setItem('user', JSON.stringify(userData));
+      return userData;
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
-  
-  // Signup function
-  const signup = (name, email, password) => {
-    // In a real app, this would be an API call
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        const user = {
-          id: 'user_' + Math.random().toString(36).substr(2, 9),
-          name,
-          email,
-          role: 'user'
-        };
-        setCurrentUser(user);
-        localStorage.setItem('quantbuild_user', JSON.stringify(user));
-        resolve(user);
-      }, 1000);
-    });
+
+  // Register function
+  const register = async (userData) => {
+    try {
+      const registeredUser = await registerUser(userData);
+      if (!registeredUser || !registeredUser.token) {
+        throw new Error('Invalid registration response');
+      }
+      setCurrentUser(registeredUser);
+      localStorage.setItem('user', JSON.stringify(registeredUser));
+      return registeredUser;
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
   };
-  
-  // Logout function
+
+  // Logout
   const logout = () => {
     setCurrentUser(null);
-    localStorage.removeItem('quantbuild_user');
+    localStorage.removeItem('user');
   };
-  
-  const value = {
-    currentUser,
-    login,
-    signup,
-    logout,
-    loading
-  };
-  
+
   return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
+    <AuthContext.Provider
+      value={{
+        currentUser,       // 👈 used by ProtectedRoute
+        isAuthenticated: !!currentUser,
+        loading,
+        login,
+        register,
+        logout,
+      }}
+    >
+      {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);
