@@ -14,7 +14,7 @@ const mediumBlueAccent = '#254CBA';
 const lightBlueHighlight = '#CADBFB';
 const verySubtleGreen = '#006d7e1A'; // 10% opacity of primaryGreen
 
-// Reusable SVG Icons (assuming these are in a separate file or component in a real app)
+// Reusable SVG Icons
 const FaChartBar = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line></svg>);
 const FaBuilding = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><rect x="3" y="2" width="18" height="20" rx="2" ry="2"></rect><line x1="12" y1="6" x2="12" y2="18"></line></svg>);
 const FaUsers = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>);
@@ -49,15 +49,20 @@ const FaCommentDots = ({ className, style }) => (<svg xmlns="http://www.w3.org/2
 const FaBrain = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><path d="M9 13.5a1.5 1.5 0 0 1 1.5-1.5h1.5a1.5 1.5 0 0 1 1.5 1.5v1.5a1.5 1.5 0 0 1-1.5 1.5H10.5a1.5 1.5 0 0 1-1.5-1.5z"></path><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z"></path><path d="M12 6a4 4 0 0 1 4 4v2a4 4 0 0 1-4 4h0a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4z"></path></svg>);
 const FaGraduationCap = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><path d="M21.5 10.4l-9.5-5-9.5 5M2.5 14.4l9.5 5 9.5-5M2.5 19.4l9.5 5 9.5-5"></path><path d="M12 5L12 14"></path></svg>);
 const FaTimes = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>);
-
+const FaPaperPlane = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path></svg>);
 
 const FeaturesGrid = () => {
-    const [activeFeature, setActiveFeature] = useState(null);
     const [aiAssistantVisible, setAiAssistantVisible] = useState(false);
     const [aiMessages, setAiMessages] = useState([]);
     const [currentAiQuestion, setCurrentAiQuestion] = useState('');
-    const aiChatboxRef = useRef(null); // Ref for scrolling AI chat
-    const heroRef = useRef(null); // Ref for hero section parallax
+    const [isAiTyping, setIsAiTyping] = useState(false);
+    const aiChatboxRef = useRef(null);
+    const heroRef = useRef(null);
+    
+    // New state for the AI dashboard
+    const [selectedQuestion, setSelectedQuestion] = useState(null);
+    const [aiDashboardMessages, setAiDashboardMessages] = useState([]);
+    const [isDashboardAiTyping, setIsDashboardAiTyping] = useState(false);
 
     // For parallax effect on hero section
     const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start end", "end start"] });
@@ -66,10 +71,10 @@ const FeaturesGrid = () => {
     // Architectural images from public folder
     const architecturalImages = [
         "/fetch.jpg",
-        "/rob.jpg", // New image
-        "/rob2.jpg", // New image
-        "/feature.jpg", // New image
-        "/fetch.jpg", // Reusing fetch.jpg for the 5th feature as requested
+        "/rob.jpg",
+        "/rob2.jpg",
+        "/feature.jpg",
+        "/fetch.jpg",
     ];
 
     const features = [
@@ -113,7 +118,7 @@ const FeaturesGrid = () => {
             description: "Capture accurate measurements on the go",
             detailed: "Utilize your mobile device for precise site measurements and immediate upload to the platform. Our app uses augmented reality to verify dimensions, reducing human error and accelerating data collection directly from the construction site, even in remote areas of Kenya.",
             kenyaSpecific: true,
-            image: architecturalImages[4], // New image for this feature
+            image: architecturalImages[4],
         }
     ];
 
@@ -256,14 +261,7 @@ const FeaturesGrid = () => {
         }
     };
 
-    // Scroll to the bottom of the AI chatbox whenever messages change
-    useEffect(() => {
-        if (aiChatboxRef.current) {
-            aiChatboxRef.current.scrollTop = aiChatboxRef.current.scrollHeight;
-        }
-    }, [aiMessages]);
-
-
+    // AI responses and questions
     const aiResponses = [
         "Based on your current design, the optimal material for the foundation, considering local Kenyan suppliers, is C30 concrete. This balances cost-effectiveness with structural integrity for Nairobi's soil conditions.",
         "For a project of this scale in Mombasa, your estimated labor cost, factoring in prevailing union rates and local availability, is approximately 7.5 million KES. Our AI has optimized this based on efficient crew sizing.",
@@ -290,16 +288,39 @@ const FeaturesGrid = () => {
         "Can you provide a comparison of pre-fabricated vs. traditional building methods?"
     ];
 
+    // Scroll to the bottom of the AI chatbox whenever messages change
+    useEffect(() => {
+        if (aiChatboxRef.current) {
+            aiChatboxRef.current.scrollTop = aiChatboxRef.current.scrollHeight;
+        }
+    }, [aiMessages]);
+
     const askAI = (question) => {
-        if (!question.trim()) return; // Prevent sending empty messages
+        if (!question.trim()) return;
         setAiMessages(prev => [...prev, { text: question, sender: 'user' }]);
-        setCurrentAiQuestion(''); // Clear input after sending
-        setAiAssistantVisible(true); // Ensure AI chat is visible
+        setCurrentAiQuestion('');
+        setAiAssistantVisible(true);
+        setIsAiTyping(true);
 
         setTimeout(() => {
             const response = aiResponses[Math.floor(Math.random() * aiResponses.length)];
             setAiMessages(prev => [...prev, { text: response, sender: 'ai' }]);
-        }, 1500); // Increased delay for more realistic typing feel
+            setIsAiTyping(false);
+        }, 1500);
+    };
+
+    // Function to handle question selection in the dashboard
+    const selectDashboardQuestion = (index) => {
+        setSelectedQuestion(index);
+        setIsDashboardAiTyping(true);
+        
+        setTimeout(() => {
+            setAiDashboardMessages([
+                { text: userQuestions[index], sender: 'user' },
+                { text: aiResponses[index], sender: 'ai' }
+            ]);
+            setIsDashboardAiTyping(false);
+        }, 1000);
     };
 
     const getImageStyle = (image) => ({
@@ -314,429 +335,665 @@ const FeaturesGrid = () => {
             {/* Hero Section with Parallax */}
             <motion.section
                 ref={heroRef}
-                className="relative h-[60vh] md:h-[70vh] flex items-center justify-center text-white overflow-hidden" // Reduced height
-                style={{ background: darkBlueBackground }}
+                className="relative bg-cover bg-center text-white py-24 md:py-32 overflow-hidden"
+                style={{
+                    backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7)), url('/fetch.jpg')`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat',
+                }}
             >
                 <motion.div
-                    className="absolute inset-0 z-0"
+                    className="absolute inset-0"
                     style={{
-                        backgroundImage: 'url(/fetch.jpg)', // Updated hero image to fetch.jpg
+                        y: yParallax,
+                        backgroundImage: `url('/fetch.jpg')`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        y: yParallax
+                        zIndex: -1,
                     }}
-                >
-                    {/* Darker overlay for better text contrast */}
-                    <div className="absolute inset-0 bg-black opacity-50"></div>
-                </motion.div>
-                <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+                />
+
+                <div className="container mx-auto px-6 text-center relative z-10">
                     <motion.h1
-                        initial={{ opacity: 0, y: -50 }}
+                        className="text-4xl md:text-6xl font-extrabold leading-tight mb-6 drop-shadow-lg"
+                        initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1, ease: "easeOut" }}
-                        className="text-5xl md:text-7xl font-extrabold leading-tight tracking-wider drop-shadow-lg"
-                        style={{ color: lightBlueHighlight }}
+                        transition={{ duration: 0.8 }}
                     >
                         QuantumTakeoff AI
                     </motion.h1>
                     <motion.p
-                        initial={{ opacity: 0, y: 50 }}
+                        className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90"
+                        initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
-                        className="mt-6 text-xl md:text-2xl max-w-2xl mx-auto font-light"
-                        style={{ color: lightTextOnDark }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
                     >
-                        Revolutionizing construction with **AI-powered precision** and **localized insights** for the Kenyan market.
+                        Revolutionizing Construction with AI-Powered Precision in Africa.
                     </motion.p>
                     <motion.button
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-                        className="mt-12 px-10 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1"
-                        style={{ backgroundColor: primaryGreen, color: whiteContainer }}
+                        className="bg-white text-gray-900 px-10 py-4 rounded-full text-lg font-semibold hover:bg-gray-200 transition duration-300 transform hover:scale-105 shadow-lg"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
                     >
-                        Discover Solutions <FaArrowRight className="inline ml-3 text-xl" />
+                        Request a Demo <FaArrowRight className="inline-block ml-2" />
                     </motion.button>
                 </div>
             </motion.section>
 
-            {/* Main Features Section */}
-            <section className="py-24 px-4 md:px-8 lg:px-16 bg-white overflow-hidden">
-                <motion.h2
-                    className="text-4xl lg:text-5xl font-extrabold text-center mb-16 relative"
-                    style={{ color: darkTextOnWhite }}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.3 }}
-                    variants={sectionVariants}
-                >
-                    <span className="relative z-10">Core Innovations</span>
-                    <motion.span
-                        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-2 rounded-full"
-                        style={{ backgroundColor: primaryGreen, opacity: 0.2 }}
-                        initial={{ width: 0 }}
-                        whileInView={{ width: '80px', transition: { duration: 0.8, delay: 0.2 } }}
+            {/* Core Innovations Section - Alternating Layout */}
+            <section className="py-20 md:py-24 bg-white">
+                <div className="container mx-auto px-6">
+                    <motion.h2
+                        className="text-4xl font-bold text-center mb-16"
+                        style={{ color: darkTextOnWhite }}
+                        variants={sectionVariants}
+                        initial="hidden"
+                        whileInView="visible"
                         viewport={{ once: true, amount: 0.3 }}
-                    ></motion.span>
-                </motion.h2>
-                <motion.div
-                    className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-7xl mx-auto"
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.2 }}
-                >
+                    >
+                        Our Core Innovations
+                    </motion.h2>
+
                     {features.map((feature, index) => (
                         <motion.div
                             key={index}
-                            className="rounded-3xl shadow-xl overflow-hidden cursor-pointer flex flex-col group transition-all duration-300"
-                            style={{ backgroundColor: whiteContainer, border: `1px solid ${lightBorder}` }}
-                            onClick={() => setActiveFeature(activeFeature === index ? null : index)}
-                            variants={itemVariants}
-                            whileHover="hover"
-                            whileTap="tap"
+                            className={`flex flex-col md:flex-row items-center gap-12 lg:gap-20 mb-20 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}
+                            initial={{ opacity: 0, y: 50 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, amount: 0.2 }}
+                            transition={{ duration: 0.7, ease: "easeOut" }}
                         >
-                            <div className="relative h-60 bg-gray-200" style={getImageStyle(feature.image)}>
-                                {/* Animated Overlay on Hover */}
+                            <div className="md:w-1/2">
                                 <motion.div
-                                    className="absolute inset-0 bg-black opacity-40 group-hover:opacity-10 transition-opacity duration-300"
-                                    variants={cardHoverVariants}
-                                />
-                                {/* Feature Icon with Animation */}
+                                    className="relative w-full h-72 md:h-96 rounded-xl shadow-xl overflow-hidden group"
+                                    style={getImageStyle(feature.image)}
+                                    whileHover="hover"
+                                >
+                                    <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <span className="text-white text-lg font-semibold text-center px-4">
+                                            {feature.title} in Action
+                                        </span>
+                                    </div>
+                                </motion.div>
+                            </div>
+                            <div className="md:w-1/2 text-center md:text-left">
                                 <motion.div
-                                    className="absolute top-6 left-6 p-4 rounded-full shadow-lg"
-                                    style={{ backgroundColor: whiteContainer, color: primaryGreen }}
+                                    className="inline-block p-4 rounded-full mb-6"
+                                    style={{ backgroundColor: verySubtleGreen }}
                                     variants={iconHoverVariants}
+                                    whileHover="hover"
                                 >
                                     {feature.icon}
                                 </motion.div>
-                            </div>
-                            <div className="p-8 flex flex-col flex-grow">
-                                <h3 className="text-2xl font-bold mb-3" style={{ color: darkTextOnWhite }}>
+                                <h3 className="text-3xl font-semibold mb-4" style={{ color: darkTextOnWhite }}>
                                     {feature.title}
                                 </h3>
-                                <p className="text-gray-600 mb-4 flex-grow font-medium" style={{ color: subtleBlack }}>
-                                    {feature.description}
+                                <p className="text-lg leading-relaxed mb-6" style={{ color: subtleBlack }}>
+                                    {feature.detailed}
                                 </p>
-                                <AnimatePresence initial={false}>
-                                    {activeFeature === index && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: "auto" }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            transition={{ duration: 0.4, ease: "easeInOut" }}
-                                            className="overflow-hidden"
-                                        >
-                                            <p className="text-base mt-2 text-gray-700 leading-relaxed" style={{ color: darkTextOnWhite }}>
-                                                {feature.detailed}
-                                                {feature.kenyaSpecific && (
-                                                    <span className="ml-2 px-3 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: verySubtleGreen, color: primaryGreen }}>
-                                                        Kenya Specific
-                                                    </span>
-                                                )}
-                                            </p>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                                <motion.button
-                                    className="mt-6 px-7 py-3 rounded-full text-sm font-semibold transition-all duration-300 self-start"
-                                    style={{ backgroundColor: primaryGreen, color: whiteContainer }}
-                                    whileHover={{ scale: 1.05, boxShadow: "0px 4px 15px rgba(0, 109, 126, 0.4)" }}
-                                    whileTap={{ scale: 0.95 }}
-                                    onClick={(e) => { e.stopPropagation(); setActiveFeature(activeFeature === index ? null : index); }}
-                                >
-                                    {activeFeature === index ? 'Show Less' : 'Learn More'}
-                                </motion.button>
+                                {feature.aiFeature && (
+                                    <span className="inline-block bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-medium mr-2 mb-2">AI-Powered</span>
+                                )}
+                                {feature.kenyaSpecific && (
+                                    <span className="inline-block bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full font-medium mb-2">Kenya-Specific</span>
+                                )}
                             </div>
                         </motion.div>
                     ))}
-                </motion.div>
+                </div>
             </section>
 
-            {/* Secondary Features Section */}
-            <section className="py-24 px-4 md:px-8 lg:px-16" style={{ backgroundColor: darkBlueBackground }}>
-                <motion.h2
-                    className="text-4xl lg:text-5xl font-extrabold text-center mb-16 relative"
-                    style={{ color: lightBlueHighlight }}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.3 }}
-                    variants={sectionVariants}
-                >
-                    <span className="relative z-10">Advanced Capabilities</span>
-                    <motion.span
-                        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-2 rounded-full"
-                        style={{ backgroundColor: mediumBlueAccent, opacity: 0.2 }}
-                        initial={{ width: 0 }}
-                        whileInView={{ width: '80px', transition: { duration: 0.8, delay: 0.2 } }}
+            {/* AI Assistant Dashboard Section - DeepSeek Inspired */}
+            <section className="py-20 md:py-24" style={{ backgroundColor: darkBlueBackground }}>
+                <div className="container mx-auto px-6">
+                    <motion.h2
+                        className="text-4xl font-bold mb-8 text-center text-white"
+                        variants={sectionVariants}
+                        initial="hidden"
+                        whileInView="visible"
                         viewport={{ once: true, amount: 0.3 }}
-                    ></motion.span>
-                </motion.h2>
-                <motion.div
-                    className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 max-w-7xl mx-auto"
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.2 }}
-                >
-                    {advancedFeatures.map((feature, index) => (
-                        <motion.div
-                            key={index}
-                            className="bg-white p-8 rounded-2xl shadow-lg flex flex-col items-start transition-all duration-300"
-                            style={{ border: `1px solid ${lightBorder}` }}
-                            variants={itemVariants}
-                            whileHover={cardHoverVariants.hover}
-                            whileTap={cardHoverVariants.tap}
-                        >
-                            <motion.div
-                                className="mb-4 p-3 rounded-lg"
-                                style={{ backgroundColor: feature.icon.props.style.color + '1A' }} // Using a subtle tint of icon color
-                                variants={iconHoverVariants}
-                            >
-                                {React.cloneElement(feature.icon, { style: { color: feature.icon.props.style.color } })}
-                            </motion.div>
-                            <h3 className="text-xl font-bold mb-2" style={{ color: darkTextOnWhite }}>
-                                {feature.title}
-                            </h3>
-                            <p className="text-gray-600 mb-4 flex-grow font-medium" style={{ color: subtleBlack }}>
-                                {feature.description}
-                            </p>
-                            <p className="text-sm text-gray-700 leading-relaxed" style={{ color: darkTextOnWhite }}>
-                                {feature.detailed}
-                            </p>
-                        </motion.div>
-                    ))}
-                </motion.div>
-            </section>
-
-            {/* Additional Features Section (compact list) */}
-            <section className="py-24 px-4 md:px-8 lg:px-16 bg-gradient-to-br from-white to-gray-100">
-                <motion.h2
-                    className="text-4xl lg:text-5xl font-extrabold text-center mb-16 relative"
-                    style={{ color: darkTextOnWhite }}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.3 }}
-                    variants={sectionVariants}
-                >
-                    <span className="relative z-10">More Powerful Features</span>
-                    <motion.span
-                        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-2 rounded-full"
-                        style={{ backgroundColor: primaryGreen, opacity: 0.2 }}
-                        initial={{ width: 0 }}
-                        whileInView={{ width: '80px', transition: { duration: 0.8, delay: 0.2 } }}
-                        viewport={{ once: true, amount: 0.3 }}
-                    ></motion.span>
-                </motion.h2>
-                <motion.div
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-8 max-w-6xl mx-auto"
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.2 }}
-                >
-                    {additionalFeatures.map((feature, index) => (
-                        <motion.div
-                            key={index}
-                            className="bg-white p-6 rounded-xl shadow-md flex items-start space-x-4 transition-all duration-300"
-                            style={{ border: `1px solid ${lightBorder}` }}
-                            variants={itemVariants}
-                            whileHover={{ scale: 1.02, boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.08)" }}
-                            whileTap={{ scale: 0.98 }}
-                        >
-                            <div className="flex-shrink-0 mt-1">
-                                {feature.icon}
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-bold mb-1" style={{ color: darkTextOnWhite }}>
-                                    {feature.title}
-                                </h3>
-                                <p className="text-gray-600" style={{ color: subtleBlack }}>
-                                    {feature.description}
-                                </p>
-                            </div>
-                        </motion.div>
-                    ))}
-                </motion.div>
-            </section>
-
-            {/* Integrations Section */}
-            <section className="py-24 px-4 md:px-8 lg:px-16" style={{ backgroundColor: darkBackground }}>
-                <motion.h2
-                    className="text-4xl lg:text-5xl font-extrabold text-center mb-16 relative"
-                    style={{ color: lightTextOnDark }}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.3 }}
-                    variants={sectionVariants}
-                >
-                    <span className="relative z-10">Seamless Integrations</span>
-                    <motion.span
-                        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-2 rounded-full"
-                        style={{ backgroundColor: mediumBlueAccent, opacity: 0.2 }}
-                        initial={{ width: 0 }}
-                        whileInView={{ width: '80px', transition: { duration: 0.8, delay: 0.2 } }}
-                        viewport={{ once: true, amount: 0.3 }}
-                    ></motion.span>
-                </motion.h2>
-                <motion.div
-                    className="flex flex-wrap justify-center gap-10 max-w-7xl mx-auto"
-                    variants={containerVariants}
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.2 }}
-                >
-                    {integrationPlatforms.map((platform, index) => (
-                        <motion.div
-                            key={index}
-                            className="bg-gray-800 p-7 rounded-xl shadow-lg text-center flex flex-col items-center justify-center min-w-[160px] transform hover:scale-105 transition-all duration-300"
-                            style={{ backgroundColor: subtleBlack }}
-                            variants={itemVariants}
-                            whileHover={{ boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.4)" }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            <motion.div
-                                variants={iconHoverVariants}
-                            >
-                                {platform.icon}
-                            </motion.div>
-                            <h3 className="mt-4 text-xl font-semibold" style={{ color: lightTextOnDark }}>{platform.name}</h3>
-                            <p className="text-sm text-gray-400" style={{ color: lightTextOnDark }}>{platform.category}</p>
-                        </motion.div>
-                    ))}
-                </motion.div>
-            </section>
-
-            {/* Call to Action at the bottom */}
-            <section className="py-24 px-4 md:px-8 lg:px-16 text-center bg-gradient-to-r from-[#005a67] to={primaryGreen} relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url(/abstract-pattern.png)', backgroundSize: 'cover' }}></div>
-                <motion.h2
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.3 }}
-                    variants={sectionVariants}
-                    className="text-4xl md:text-5xl font-extrabold mb-6 relative z-10"
-                    style={{ color: whiteContainer }}
-                >
-                    Ready to Transform Your Construction Workflow?
-                </motion.h2>
-                <motion.p
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true, amount: 0.3 }}
-                    variants={sectionVariants}
-                    transition={{ delay: 0.2 }}
-                    className="text-xl md:text-2xl mb-12 max-w-3xl mx-auto font-light relative z-10"
-                    style={{ color: lightBlueHighlight }}
-                >
-                    Experience **unparalleled accuracy**, **speed**, and **efficiency** with QuantumTakeoff AI.
-                </motion.p>
-                <motion.button
-                    className="px-12 py-5 rounded-full text-xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 relative z-10"
-                    style={{ backgroundColor: whiteContainer, color: primaryGreen }}
-                    whileHover={{ scale: 1.05, boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.3)" }}
-                    whileTap={{ scale: 0.95 }}
-                >
-                    Get a Live Demo <FaPlay className="inline ml-3 text-2xl" />
-                </motion.button>
-            </section>
-
-            {/* Fixed AI Assistant Chat Widget */}
-            <AnimatePresence>
-                {aiAssistantVisible ? (
-                    <motion.div
-                        initial={{ opacity: 0, x: 200, scale: 0.8 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, x: 200, scale: 0.8 }}
-                        transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                        className="fixed bottom-8 right-8 z-50 w-full max-w-sm bg-white rounded-lg shadow-2xl overflow-hidden border border-gray-200 flex flex-col h-[500px]"
-                        style={{ borderColor: lightBorder }}
                     >
-                        <div className="p-4 flex justify-between items-center flex-shrink-0" style={{ backgroundColor: darkBlueBackground, color: whiteContainer }}>
-                            <h3 className="font-bold text-xl">AI Assistant <FaRobot className="inline ml-2" /></h3>
-                            <button onClick={() => setAiAssistantVisible(false)} className="text-white hover:text-gray-300 transition-colors p-1 rounded-full hover:bg-gray-700">
-                                <FaTimes className="text-xl" />
-                            </button>
-                        </div>
-                        <div ref={aiChatboxRef} className="flex-grow overflow-y-auto p-4 space-y-4 bg-gray-50 custom-scrollbar">
-                            {aiMessages.length === 0 && (
-                                <div className="text-center text-gray-500 italic py-10">
-                                    Start a conversation! Click a suggestion or type your question below.
-                                </div>
-                            )}
-                            {aiMessages.map((msg, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                                >
-                                    <div
-                                        className={`max-w-[80%] p-3 rounded-xl shadow-md ${msg.sender === 'user' ? 'bg-blue-100 text-blue-800 rounded-br-none' : 'bg-gray-200 text-gray-800 rounded-bl-none'}`}
-                                        style={{
-                                            backgroundColor: msg.sender === 'user' ? lightBlueHighlight : lightBorder,
-                                            color: msg.sender === 'user' ? darkBlueBackground : darkTextOnWhite
-                                        }}
-                                    >
-                                        {msg.text}
+                        Interactive AI Assistant
+                    </motion.h2>
+                    <motion.p
+                        className="text-xl mb-12 max-w-3xl mx-auto text-center opacity-90 text-white"
+                        variants={sectionVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        Get instant insights on your construction projects with JTech AI
+                    </motion.p>
+
+                    <motion.div 
+                        className="bg-white rounded-xl shadow-2xl overflow-hidden"
+                        variants={sectionVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ delay: 0.4 }}
+                    >
+                        <div className="flex flex-col lg:flex-row h-[500px]">
+                            {/* Sidebar - Question History */}
+                            <div className="lg:w-1/3 border-r border-gray-200 bg-gray-50 overflow-y-auto">
+                                <div className="p-6 border-b border-gray-200">
+                                    <div className="flex items-center">
+                                        <div className="bg-gradient-to-r from-blue-500 to-primaryGreen p-0.5 rounded-full mr-3">
+                                            <div className="bg-white rounded-full w-8 h-8 flex items-center justify-center">
+                                                <FaBrain className="text-xs" style={{ color: primaryGreen }} />
+                                            </div>
+                                        </div>
+                                        <h3 className="text-lg font-semibold">Project Questions</h3>
                                     </div>
-                                </motion.div>
-                            ))}
-                        </div>
-                        <div className="p-4 border-t flex-shrink-0" style={{ borderColor: lightBorder }}>
-                            <div className="grid grid-cols-2 gap-2 text-sm mb-4">
-                                {userQuestions.slice(0, 4).map((q, index) => (
-                                    <motion.button
-                                        key={index}
-                                        className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-left hover:bg-gray-200 transition-colors text-xs leading-tight"
-                                        style={{ backgroundColor: lightBorder, color: subtleBlack }}
-                                        onClick={() => askAI(q)}
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                    >
-                                        {q.length > 40 ? q.substring(0, 37) + '...' : q}
-                                    </motion.button>
-                                ))}
+                                </div>
+                                
+                                <div className="space-y-1 p-4">
+                                    {userQuestions.map((question, index) => (
+                                        <motion.div
+                                            key={index}
+                                            className={`p-3 rounded-lg cursor-pointer transition ${
+                                                selectedQuestion === index 
+                                                    ? 'bg-blue-50 border border-blue-200' 
+                                                    : 'hover:bg-gray-100'
+                                            }`}
+                                            whileHover={{ backgroundColor: '#f3f4f6' }}
+                                            onClick={() => selectDashboardQuestion(index)}
+                                        >
+                                            <div className="flex items-start">
+                                                <span className={`w-6 h-6 flex items-center justify-center mr-2 mt-0.5 text-xs rounded-full ${
+                                                    selectedQuestion === index 
+                                                        ? 'bg-blue-500 text-white' 
+                                                        : 'bg-gray-200 text-gray-700'
+                                                }`}>
+                                                    {index + 1}
+                                                </span>
+                                                <p className="text-gray-700 text-sm">{question}</p>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="flex">
-                                <input
-                                    type="text"
-                                    placeholder="Type your question..."
-                                    className="flex-grow p-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
-                                    style={{ borderColor: lightBorder, color: darkTextOnWhite, backgroundColor: whiteContainer }}
-                                    value={currentAiQuestion}
-                                    onChange={(e) => setCurrentAiQuestion(e.target.value)}
-                                    onKeyPress={(e) => {
-                                        if (e.key === 'Enter') {
-                                            askAI(currentAiQuestion);
-                                        }
-                                    }}
-                                />
-                                <motion.button
-                                    className="px-4 rounded-r-lg"
-                                    style={{ backgroundColor: primaryGreen, color: whiteContainer }}
-                                    onClick={() => askAI(currentAiQuestion)}
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    <FaArrowRight className="text-xl" />
-                                </motion.button>
+                            
+                            {/* Main Chat Area */}
+                            <div className="lg:w-2/3 flex flex-col">
+                                {/* Chat Header */}
+                                <div className="p-4 border-b border-gray-200 flex items-center">
+                                    <div className="bg-gradient-to-r from-blue-500 to-primaryGreen p-1 rounded-full mr-3">
+                                        <div className="bg-white rounded-full w-10 h-10 flex items-center justify-center">
+                                            <FaBrain className="text-lg" style={{ color: primaryGreen }} />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 className="font-semibold">JTech AI Assistant</h3>
+                                        <p className="text-xs text-gray-500">How can I help with your project today?</p>
+                                    </div>
+                                </div>
+                                
+                                {/* Chat Messages */}
+                                <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
+                                    {aiDashboardMessages.length === 0 ? (
+                                        <div className="h-full flex flex-col items-center justify-center text-center p-8">
+                                            <div className="mb-6">
+                                                <div className="bg-gradient-to-r from-blue-500 to-primaryGreen p-1 rounded-full w-24 h-24 mx-auto mb-4">
+                                                    <div className="bg-white rounded-full w-full h-full flex items-center justify-center">
+                                                        <FaBrain className="text-3xl" style={{ color: primaryGreen }} />
+                                                    </div>
+                                                </div>
+                                                <h3 className="text-xl font-semibold mb-2" style={{ color: darkTextOnWhite }}>
+                                                    Welcome to QuantumTakeoff AI Assistant
+                                                </h3>
+                                                <p className="text-gray-600 max-w-md mx-auto">
+                                                    Select a question from the sidebar to get instant insights about your construction project.
+                                                </p>
+                                            </div>
+                                            <div className="bg-blue-50 rounded-xl p-4 max-w-md w-full">
+                                                <p className="text-sm font-medium mb-2">Try asking:</p>
+                                                <div className="space-y-2">
+                                                    {userQuestions.slice(0, 3).map((q, i) => (
+                                                        <div 
+                                                            key={i}
+                                                            className="text-left text-sm bg-white p-3 rounded-lg border border-gray-200 cursor-pointer hover:bg-gray-50"
+                                                            onClick={() => selectDashboardQuestion(i)}
+                                                        >
+                                                            {q}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-4">
+                                            {aiDashboardMessages.map((msg, index) => (
+                                                <motion.div
+                                                    key={index}
+                                                    className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <div
+                                                        className={`max-w-[85%] rounded-xl p-4 ${
+                                                            msg.sender === 'user'
+                                                            ? 'bg-blue-100 text-gray-800 rounded-br-none'
+                                                            : 'bg-white text-gray-700 rounded-bl-none shadow-sm border border-gray-100'
+                                                        }`}
+                                                    >
+                                                        <div className="flex items-start">
+                                                            {msg.sender === 'ai' && (
+                                                                <div className="bg-gradient-to-r from-blue-500 to-primaryGreen p-0.5 rounded-full mr-3">
+                                                                    <div className="bg-white rounded-full w-6 h-6 flex items-center justify-center">
+                                                                        <FaBrain className="text-xs" style={{ color: primaryGreen }} />
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            <div>
+                                                                {msg.sender === 'ai' && (
+                                                                    <div className="font-medium text-xs mb-1" style={{ color: primaryGreen }}>QuantumTakeoff AI</div>
+                                                                )}
+                                                                <p className="text-gray-800">{msg.text}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                            
+                                            {isDashboardAiTyping && (
+                                                <motion.div
+                                                    className="flex justify-start"
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <div className="bg-white text-gray-700 rounded-xl rounded-bl-none p-4 shadow-sm border border-gray-100 max-w-[85%]">
+                                                        <div className="flex items-center">
+                                                            <div className="bg-gradient-to-r from-blue-500 to-primaryGreen p-0.5 rounded-full mr-3">
+                                                                <div className="bg-white rounded-full w-6 h-6 flex items-center justify-center">
+                                                                    <FaBrain className="text-xs" style={{ color: primaryGreen }} />
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex space-x-1">
+                                                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                                                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse delay-100"></div>
+                                                                <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse delay-200"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {/* Input Area */}
+                                <div className="p-4 border-t bg-white">
+                                    <div className="flex items-center space-x-2">
+                                        <div className="flex-1 relative">
+                                            <input
+                                                type="text"
+                                                placeholder="Ask me anything about your project..."
+                                                className="w-full p-3 pl-4 pr-10 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primaryGreen focus:border-transparent"
+                                                style={{ color: darkTextOnWhite }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && e.target.value.trim()) {
+                                                        askAI(e.target.value);
+                                                        e.target.value = '';
+                                                    }
+                                                }}
+                                            />
+                                            <button 
+                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primaryGreen"
+                                            >
+                                                <FaMicrophoneAlt />
+                                            </button>
+                                        </div>
+                                        <button
+                                            onClick={() => setAiAssistantVisible(true)}
+                                            className="bg-gradient-to-r from-blue-500 to-primaryGreen text-white p-3 rounded-xl hover:opacity-90 transition duration-200 flex items-center justify-center w-12 h-12"
+                                        >
+                                            <FaArrowRight className="text-lg" />
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </motion.div>
-                ) : (
-                    <motion.button
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 1, type: "spring", damping: 20, stiffness: 300 }}
-                        onClick={() => setAiAssistantVisible(true)}
-                        className="fixed bottom-8 right-8 z-50 p-4 rounded-full shadow-lg text-white text-2xl flex items-center justify-center transition-transform hover:scale-110"
-                        style={{ backgroundColor: mediumBlueAccent }}
-                        aria-label="Open AI Assistant"
+                    
+                    <motion.div 
+                        className="mt-12 text-center"
+                        variants={sectionVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ delay: 0.6 }}
                     >
-                        <FaCommentDots />
-                    </motion.button>
+                        <p className="text-white mb-4">Need more complex queries? Try our full assistant</p>
+                        <motion.button
+                            onClick={() => setAiAssistantVisible(true)}
+                            className="bg-white text-blue-900 px-10 py-3 rounded-full text-lg font-semibold hover:bg-gray-200 transition duration-300 shadow-lg"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            Open Full AI Assistant
+                        </motion.button>
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* Additional Features Section */}
+            <section className="py-20 md:py-24 bg-gray-50">
+                <div className="container mx-auto px-6">
+                    <motion.h2
+                        className="text-4xl font-bold text-center mb-14"
+                        style={{ color: darkTextOnWhite }}
+                        variants={sectionVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                    >
+                        Beyond the Core: More Powerful Features
+                    </motion.h2>
+                    <motion.div
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                        variants={containerVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                    >
+                        {additionalFeatures.map((feature, index) => (
+                            <motion.div
+                                key={index}
+                                className="bg-white rounded-lg p-8 shadow-md border border-gray-100 flex flex-col items-center text-center"
+                                variants={itemVariants}
+                                whileHover="hover"
+                                animate="visible"
+                            >
+                                <motion.div variants={iconHoverVariants} className="mb-4">
+                                    {feature.icon}
+                                </motion.div>
+                                <h3 className="text-xl font-semibold mb-2" style={{ color: darkTextOnWhite }}>
+                                    {feature.title}
+                                </h3>
+                                <p className="text-gray-600">
+                                    {feature.description}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* Advanced Capabilities Section */}
+            <section className="py-20 md:py-24" style={{ backgroundColor: darkBackground }}>
+                <div className="container mx-auto px-6">
+                    <motion.h2
+                        className="text-4xl font-bold text-center mb-14"
+                        style={{ color: lightTextOnDark }}
+                        variants={sectionVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                    >
+                        Advanced Capabilities
+                    </motion.h2>
+                    <motion.div
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                        variants={containerVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                    >
+                        {advancedFeatures.map((feature, index) => (
+                            <motion.div
+                                key={index}
+                                className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg p-8 shadow-xl border border-gray-700 flex flex-col items-center text-center text-white"
+                                variants={itemVariants}
+                                whileHover="hover"
+                                animate="visible"
+                            >
+                                <motion.div variants={iconHoverVariants} className="mb-4">
+                                    {feature.icon}
+                                </motion.div>
+                                <h3 className="text-xl font-semibold mb-3">
+                                    {feature.title}
+                                </h3>
+                                <p className="text-gray-400 mb-4 text-sm">
+                                    {feature.description}
+                                </p>
+                                <p className="text-gray-300 text-xs leading-relaxed">
+                                    {feature.detailed}
+                                </p>
+                                {feature.aiFeature && (
+                                    <span className="mt-4 inline-block bg-blue-700 text-blue-100 text-xs px-3 py-1 rounded-full font-medium mr-2">AI-Driven</span>
+                                )}
+                                {feature.kenyaSpecific && (
+                                    <span className="mt-4 inline-block bg-green-700 text-green-100 text-xs px-3 py-1 rounded-full font-medium">Local Focus</span>
+                                )}
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* Seamless Integrations Section */}
+            <section className="py-20 md:py-24 bg-white">
+                <div className="container mx-auto px-6">
+                    <motion.h2
+                        className="text-4xl font-bold text-center mb-14"
+                        style={{ color: darkTextOnWhite }}
+                        variants={sectionVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                    >
+                        Seamless Integrations
+                    </motion.h2>
+                    <motion.p
+                        className="text-lg text-center mb-12 max-w-2xl mx-auto"
+                        style={{ color: subtleBlack }}
+                        variants={sectionVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        Connect QuantumTakeoff AI effortlessly with your existing software ecosystem. Our platform is designed for interoperability, ensuring a smooth workflow.
+                    </motion.p>
+                    <motion.div
+                        className="flex flex-wrap justify-center items-center gap-x-12 gap-y-8"
+                        variants={containerVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                    >
+                        {integrationPlatforms.map((platform, index) => (
+                            <motion.div
+                                key={index}
+                                className="flex flex-col items-center text-center p-4 rounded-lg"
+                                variants={itemVariants}
+                                whileHover={{ scale: 1.1, color: primaryGreen }}
+                                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                            >
+                                {platform.icon}
+                                <span className="mt-3 text-lg font-medium" style={{ color: darkTextOnWhite }}>
+                                    {platform.name}
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                    {platform.category}
+                                </span>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* AI Assistant Chat Interface */}
+            <AnimatePresence>
+                {aiAssistantVisible && (
+                    <motion.div
+                        className="fixed bottom-6 right-6 w-full max-w-md bg-white rounded-xl shadow-2xl z-50 flex flex-col overflow-hidden"
+                        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 50, scale: 0.9 }}
+                        transition={{ type: "spring", stiffness: 150, damping: 20 }}
+                        style={{ height: '600px', maxHeight: '90vh' }}
+                    >
+                        <div className="flex justify-between items-center p-4" style={{ backgroundColor: primaryGreen }}>
+                            <div className="flex items-center space-x-2">
+                                <FaRobot className="text-xl text-white" />
+                                <h3 className="text-lg font-semibold text-white">QuantumTakeoff AI Assistant</h3>
+                            </div>
+                            <button 
+                                onClick={() => setAiAssistantVisible(false)} 
+                                className="text-white hover:text-gray-200 transition"
+                            >
+                                <FaTimes className="text-xl" />
+                            </button>
+                        </div>
+                        
+                        <div 
+                            ref={aiChatboxRef}
+                            className="flex-1 p-4 overflow-y-auto bg-gray-50 custom-scrollbar"
+                        >
+                            {aiMessages.length === 0 ? (
+                                <div className="text-center py-8">
+                                    <div className="bg-gradient-to-r from-blue-500 to-primaryGreen p-1 rounded-full w-16 h-16 mx-auto mb-4">
+                                        <div className="bg-white rounded-full w-full h-full flex items-center justify-center">
+                                            <FaBrain className="text-3xl" style={{ color: primaryGreen }} />
+                                        </div>
+                                    </div>
+                                    <h3 className="text-xl font-semibold mb-2" style={{ color: darkTextOnWhite }}>How can I help with your project?</h3>
+                                    <p className="text-gray-600 mb-6">Ask me anything about construction, costs, or regulations.</p>
+                                    
+                                    <div className="mt-6">
+                                        <p className="font-medium mb-3 text-left text-gray-700">Popular questions:</p>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {userQuestions.slice(0, 4).map((q, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => askAI(q)}
+                                                    className="bg-white border border-gray-200 rounded-lg p-3 text-left hover:bg-gray-50 transition shadow-sm"
+                                                >
+                                                    <div className="flex items-start">
+                                                        <span className="bg-gray-100 rounded-full w-6 h-6 flex items-center justify-center mr-2 mt-0.5 text-xs">?</span>
+                                                        <span className="text-gray-700">{q}</span>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    {aiMessages.map((msg, index) => (
+                                        <motion.div
+                                            key={index}
+                                            className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                        >
+                                            <div
+                                                className={`max-w-[85%] rounded-xl p-4 ${
+                                                    msg.sender === 'user'
+                                                    ? 'bg-blue-100 text-gray-800 rounded-br-none'
+                                                    : 'bg-white text-gray-700 rounded-bl-none shadow-sm border border-gray-100'
+                                                }`}
+                                            >
+                                                <div className="flex items-start">
+                                                    {msg.sender === 'ai' && (
+                                                        <div className="bg-gradient-to-r from-blue-500 to-primaryGreen p-0.5 rounded-full mr-3">
+                                                            <div className="bg-white rounded-full w-6 h-6 flex items-center justify-center">
+                                                                <FaBrain className="text-xs" style={{ color: primaryGreen }} />
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    <div>
+                                                        {msg.sender === 'ai' && (
+                                                            <div className="font-medium text-xs mb-1" style={{ color: primaryGreen }}>QuantumTakeoff AI</div>
+                                                        )}
+                                                        <p className="text-gray-800">{msg.text}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    ))}
+                                    
+                                    {isAiTyping && (
+                                        <motion.div
+                                            className="flex justify-start"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: 1 }}
+                                            transition={{ duration: 0.3 }}
+                                        >
+                                            <div className="bg-white text-gray-700 rounded-xl rounded-bl-none p-4 shadow-sm border border-gray-100 max-w-[85%]">
+                                                <div className="flex items-center">
+                                                    <div className="bg-gradient-to-r from-blue-500 to-primaryGreen p-0.5 rounded-full mr-3">
+                                                        <div className="bg-white rounded-full w-6 h-6 flex items-center justify-center">
+                                                            <FaBrain className="text-xs" style={{ color: primaryGreen }} />
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex space-x-1">
+                                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
+                                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse delay-100"></div>
+                                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse delay-200"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="p-4 border-t bg-white">
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    askAI(currentAiQuestion);
+                                }}
+                                className="flex items-center space-x-2"
+                            >
+                                <div className="flex-1 relative">
+                                    <input
+                                        type="text"
+                                        value={currentAiQuestion}
+                                        onChange={(e) => setCurrentAiQuestion(e.target.value)}
+                                        placeholder="Ask me anything about your project..."
+                                        className="w-full p-3 pl-4 pr-10 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primaryGreen focus:border-transparent"
+                                        style={{ color: darkTextOnWhite }}
+                                    />
+                                    <button 
+                                        type="button" 
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primaryGreen"
+                                    >
+                                        <FaMicrophoneAlt />
+                                    </button>
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="bg-gradient-to-r from-blue-500 to-primaryGreen text-white p-3 rounded-xl hover:opacity-90 transition duration-200 flex items-center justify-center w-12 h-12"
+                                    disabled={!currentAiQuestion.trim()}
+                                >
+                                    <FaPaperPlane className="text-lg" />
+                                </button>
+                            </form>
+                            
+                            <div className="mt-3 flex overflow-x-auto pb-1 space-x-2 custom-scrollbar">
+                                {userQuestions.slice(0, 6).map((q, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => askAI(q)}
+                                        className="flex-shrink-0 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-full text-xs hover:bg-gray-200 transition whitespace-nowrap"
+                                    >
+                                        {q.length > 30 ? q.substring(0, 27) + '...' : q}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </motion.div>
                 )}
             </AnimatePresence>
         </div>
