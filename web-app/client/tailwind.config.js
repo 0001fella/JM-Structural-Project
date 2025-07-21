@@ -5,48 +5,47 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./app/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class', // essential for dark/light toggle
+  darkMode: 'class',
   theme: {
     extend: {
       // --- Custom Colors ---
       colors: {
-        // Core Palette
-        primary: "#006d7e", // Your specific vibrant green from the component
-        secondary: "#254CBA", // Medium Blue Accent
-        accent: "#CADBFB", // Light Blue Highlight
-        dark: "#0D1C44", // Dark Blue Background
-        light: "#f0f0f0", // Light text for dark backgrounds (now used as a general light tone)
-        muted: "#e0e7ee", // A softer, subtle background or border color
-        danger: "#ef4444", // Example: for error states
-        success: "#22c55e", // Example: for success states
-        info: "#3b82f6", // Example: for informational messages
+        primary: "#006d7e",
+        secondary: "#254CBA",
+        accent: "#CADBFB",
+        dark: "#0D1C44",
+        light: "#f0f0f0",
+        muted: "#e0e7ee",
+        danger: "#ef4444",
+        success: "#22c55e",
+        info: "#3b82f6",
       },
 
-      // --- Custom Spacing & Sizing (for layout control) ---
+      // --- Custom Spacing & Sizing ---
       spacing: {
-        '1/5': '20%', // Custom spacing, e.g., for width/height
+        '1/5': '20%',
         '1/4': '25%',
         '1/3': '33.333333%',
         '1/2': '50%',
-        'hero-offset-lg': 'calc(100vh - 80px)', // Example: For adjusting content below a fixed header
+        'hero-offset-lg': 'calc(100vh - 80px)',
       },
       height: {
-        'screen-and-hero-offset': '100vh', // Ensures the hero section takes full viewport height
-        '128': '32rem', // Custom fixed height
+        'screen-and-hero-offset': '100vh',
+        '128': '32rem',
         '144': '36rem',
       },
       minHeight: {
-        'hero-min': '600px', // Ensures a minimum height for smaller screens
+        'hero-min': '600px',
       },
 
       // --- Custom Background Images ---
       backgroundImage: {
         'dashboard-pattern': "url('/images/dashboard-bg.jpg')",
         'hero-pattern': "url('/images/hero.jpg')",
-        'feature-hero': "url('/feature.jpg')", // Specifically for your hero section background
+        'feature-hero': "url('/feature.jpg')",
         'gradient-radial': "radial-gradient(var(--tw-gradient-stops))",
         'gradient-conic': "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        'noise-pattern': "url('/images/noise.png')", // Optional: subtle texture overlay
+        'noise-pattern': "url('/images/noise.png')",
       },
 
       // --- Custom Animations ---
@@ -57,13 +56,14 @@ module.exports = {
         'scale-in': 'scaleIn 0.6s ease-out forwards',
         'rotate-loop': 'rotateLoop 20s linear infinite',
         'glowing-border': 'glowingBorder 2s infinite alternate',
+        'spin-slow': 'spin 10s linear infinite',
       },
 
-      // --- Custom Keyframes for Animations ---
+      // --- Custom Keyframes ---
       keyframes: {
         fadeIn: {
           '0%': { opacity: 0 },
-          '100%': { opacity: 1 }
+          '100%': { opacity: 1 },
         },
         slideInUp: {
           '0%': { transform: 'translateY(50px)', opacity: 0 },
@@ -78,24 +78,24 @@ module.exports = {
           '100%': { transform: 'rotate(360deg)' },
         },
         glowingBorder: {
-          '0%': { borderColor: 'rgba(0, 109, 126, 0.3)' }, // primaryGreen with transparency
+          '0%': { borderColor: 'rgba(0, 109, 126, 0.3)' },
           '100%': { borderColor: 'rgba(0, 109, 126, 0.8)' },
         },
       },
 
-      // --- Custom Typography (optional, if you use specific fonts) ---
+      // --- Custom Typography ---
       fontFamily: {
-        sans: ['Inter', 'sans-serif'], // Example with Inter, ensure it's imported in your CSS
-        display: ['Montserrat', 'sans-serif'], // Example for headings
+        sans: ['Inter', 'sans-serif'],
+        display: ['Montserrat', 'sans-serif'],
       },
 
-      // --- Custom Shadows (for more depth) ---
+      // --- Custom Shadows ---
       boxShadow: {
         '3xl': '0 35px 60px -15px rgba(0, 0, 0, 0.3)',
         'inner-lg': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06), inset 0 0 0 1px rgba(0, 0, 0, 0.03)',
       },
 
-      // --- Custom Transitions (for smoother UI changes) ---
+      // --- Custom Transitions ---
       transitionProperty: {
         'height': 'height',
         'spacing': 'margin, padding',

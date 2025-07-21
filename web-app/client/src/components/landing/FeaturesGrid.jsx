@@ -23,7 +23,7 @@ const FaExchangeAlt = ({ className, style }) => (<svg xmlns="http://www.w3.org/2
 const FaFileInvoice = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>);
 const FaRobot = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><path d="M12 11V6"></path><path d="M18 14V9"></path><path d="M6 14V9"></path><path d="M12 18H8"></path><path d="M16 18h-4"></path><path d="M19 11h2"></path><path d="M17 13h4"></path><path d="M3 11h2"></path><path d="M3 13h4"></path><path d="M12 22a4 4 0 0 0 4-4v-1H8v1a4 4 0 0 0 4 4z"></path><rect x="9" y="3" width="6" height="6" rx="1"></rect></svg>);
 const FaDatabase = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 12a9 3 0 0 0 18 0"></path><path d="M3 19a9 3 0 0 0 18 0"></path><path d="M3 5v14a9 9 0 0 0 18 0V5"></path></svg>);
-const FaSyncAlt = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><path d="M12 1v4m0 14v4m-5-9H1m22 0h-4m-1-7.5l-2.8 2.8m-1.4 1.4l-2.8 2.8M18.5 16.5l-2.8-2.8m-1.4-1.4l-2.8-2.8M16.5 5.5l-2.8 2.8m-1.4 1.4l-2.8 2.8M5.5 18.5l2.8-2.8m1.4-1.4l2.8-2.8"></path></svg>);
+const FaSyncAlt = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><path d="M12 1v4m0 14v4m-5-9H1m22 0h-4m-1-7.5l-2.8 2.8m-1.4 1.4l-2.8 2.8M18.5 16.5l-2.8-2.8m-1.4-1.4l-2.8-2.8M5.5 18.5l2.8-2.8m1.4-1.4l2.8-2.8"></path></svg>);
 const FaShieldAlt = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>);
 const FaCloudUploadAlt = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><path d="M12 17V3"></path><path d="M5 10l7-7 7 7"></path><path d="M19 18H5a2 2 0 0 0-2 2v1a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-1a2 2 0 0 0-2-2z"></path></svg>);
 const FaVectorSquare = ({ className, style }) => (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} style={style}><path d="M12 12h.01"></path><path d="M16 12h.01"></path><path d="M8 12h.01"></path><rect x="2" y="2" width="20" height="20" rx="2" ry="2"></rect></svg>);
@@ -288,6 +288,48 @@ const FeaturesGrid = () => {
         "Can you provide a comparison of pre-fabricated vs. traditional building methods?"
     ];
 
+    // Predictive insights data
+    const predictiveInsights = [
+        {
+            title: "Material Cost Forecast",
+            description: "Predictive analysis of construction materials",
+            data: [
+                { month: 'Jan', value: 100 },
+                { month: 'Feb', value: 120 },
+                { month: 'Mar', value: 145 },
+                { month: 'Apr', value: 160 },
+                { month: 'May', value: 155 },
+                { month: 'Jun', value: 170 },
+            ],
+            insight: "Steel prices expected to rise 12% in next quarter"
+        },
+        {
+            title: "Project Timeline Risk",
+            description: "Probability of delays based on current progress",
+            data: [
+                { week: 'W1', value: 10 },
+                { week: 'W2', value: 25 },
+                { week: 'W3', value: 45 },
+                { week: 'W4', value: 65 },
+                { week: 'W5', value: 80 },
+                { week: 'W6', value: 95 },
+            ],
+            insight: "High risk of delays due to weather patterns"
+        },
+        {
+            title: "Labor Efficiency",
+            description: "Productivity trends across project sites",
+            data: [
+                { site: 'Nairobi', value: 85 },
+                { site: 'Mombasa', value: 92 },
+                { site: 'Kisumu', value: 78 },
+                { site: 'Nakuru', value: 88 },
+                { site: 'Eldoret', value: 81 },
+            ],
+            insight: "Mombasa site leads with 92% efficiency rating"
+        }
+    ];
+
     // Scroll to the bottom of the AI chatbox whenever messages change
     useEffect(() => {
         if (aiChatboxRef.current) {
@@ -329,6 +371,39 @@ const FeaturesGrid = () => {
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
     });
+
+    // Function to render a simple bar chart
+    const BarChart = ({ data, width = 300, height = 150, color = primaryGreen }) => {
+        const maxValue = Math.max(...data.map(item => item.value));
+        const barWidth = width / data.length - 10;
+        
+        return (
+            <div className="relative" style={{ width: `${width}px`, height: `${height}px` }}>
+                <div className="absolute bottom-0 left-0 right-0 top-0 flex items-end justify-between px-4">
+                    {data.map((item, index) => (
+                        <motion.div 
+                            key={index}
+                            className="flex flex-col items-center"
+                            initial={{ height: 0 }}
+                            animate={{ height: `${(item.value / maxValue) * 100}%` }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                        >
+                            <div 
+                                className="rounded-t-md w-full"
+                                style={{ 
+                                    backgroundColor: color, 
+                                    width: `${barWidth}px`,
+                                    maxWidth: '40px'
+                                }}
+                            ></div>
+                            <span className="text-xs mt-1">{item.month || item.week || item.site}</span>
+                        </motion.div>
+                    ))}
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 h-px bg-gray-300"></div>
+            </div>
+        );
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 font-sans antialiased text-gray-800">
@@ -678,6 +753,62 @@ const FeaturesGrid = () => {
                         >
                             Open Full AI Assistant
                         </motion.button>
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* Predictive Insights Section */}
+            <section className="py-20 md:py-24 bg-gradient-to-br from-gray-50 to-gray-100">
+                <div className="container mx-auto px-6">
+                    <motion.h2
+                        className="text-4xl font-bold text-center mb-16"
+                        style={{ color: darkTextOnWhite }}
+                        variants={sectionVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.3 }}
+                    >
+                        Predictive Insights
+                    </motion.h2>
+                    
+                    <motion.div 
+                        className="grid grid-cols-1 md:grid-cols-3 gap-8"
+                        variants={containerVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true, amount: 0.2 }}
+                    >
+                        {predictiveInsights.map((insight, index) => (
+                            <motion.div 
+                                key={index}
+                                className="bg-white rounded-xl shadow-lg p-6 flex flex-col"
+                                variants={itemVariants}
+                                whileHover={{ y: -10 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <div className="flex items-center mb-4">
+                                    <div className="mr-3 p-3 rounded-full" style={{ backgroundColor: verySubtleGreen }}>
+                                        <FaChartLine className="text-xl" style={{ color: primaryGreen }} />
+                                    </div>
+                                    <h3 className="text-xl font-semibold" style={{ color: darkTextOnWhite }}>
+                                        {insight.title}
+                                    </h3>
+                                </div>
+                                <p className="text-gray-600 mb-6">{insight.description}</p>
+                                
+                                <div className="flex-1 flex items-center justify-center mb-6">
+                                    <BarChart data={insight.data} />
+                                </div>
+                                
+                                <div className="bg-blue-50 p-4 rounded-lg">
+                                    <p className="font-medium text-blue-800 flex items-center">
+                                        <FaLightbulb className="mr-2" />
+                                        AI Insight:
+                                    </p>
+                                    <p className="text-blue-700 mt-1">{insight.insight}</p>
+                                </div>
+                            </motion.div>
+                        ))}
                     </motion.div>
                 </div>
             </section>
