@@ -73,6 +73,10 @@ const UpgradedHeroSection = () => {
         window.location.href = '/login';
     };
 
+    const redirectToDash = () => {
+        window.location.href = '/dashboard';
+    };
+
     useEffect(() => {
         window.addEventListener('mousemove', handleMouseMove);
 
@@ -422,7 +426,7 @@ const UpgradedHeroSection = () => {
                                     style={{ backgroundColor: primaryGreen }}
                                     whileHover={{ scale: 1.03, boxShadow: `0 12px 25px ${primaryGreen}44` }}
                                     whileTap={{ scale: 0.97, boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2) inset' }}
-                                    onClick={redirectToLogin}
+                                    onClick={redirectToDash}
                                 >
                                     <motion.span
                                         className="absolute inset-0 bg-white opacity-15 blur-xl"

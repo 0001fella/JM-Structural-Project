@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",        // ✅ use react-jsx (for React 17+)
+    "module": "esnext",        // or "commonjs" depending on your project
+    "target": "es6",           // or higher
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "strict": true
+  }
+}

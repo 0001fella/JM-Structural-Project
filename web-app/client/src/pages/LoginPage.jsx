@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import DashboardPage from './DashboardPage';
 
 // Placeholder for useAuth hook.
 // In a real application, you would replace this with your actual AuthContext setup.
@@ -37,7 +38,7 @@ const LoginPage = ({ setCurrentPage }) => {
   useEffect(() => {
     return () => {
       // Set to false when component unmounts
-      isMounted.current = false;
+      isMounted.current = true;
     };
   }, []);
 
@@ -50,17 +51,18 @@ const LoginPage = ({ setCurrentPage }) => {
       if (isLogin) {
         await login(email, password);
         if (isMounted.current) {
-          setCurrentPage('dashboard'); // Redirect to dashboard
+          window.location.href = '/dashboard'
         }
       } else {
         await signup(name, email, password);
         if (isMounted.current) {
-          setCurrentPage('dashboard'); // Redirect to dashboard
+         window.location.href = '/dashboard'
         }
       }
     } catch (err) {
       if (isMounted.current) {
-        setError('Failed to authenticate. Please check your credentials and try again.');
+      
+        setError('Failed to authenticate. Please check your credentials and try again.'+ err);
         setLoading(false);
       }
     }
@@ -431,21 +433,6 @@ const LoginPage = ({ setCurrentPage }) => {
     );
   };
 
-  // Placeholder for Dashboard Page
-  const DashboardPage = ({ setCurrentPage }) => {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white text-3xl p-4">
-        <h1 className="text-5xl font-bold mb-8">Welcome to your Dashboard!</h1>
-        <p className="text-xl mb-8 text-gray-400">This is a placeholder page.</p>
-        <button
-          onClick={() => setCurrentPage('login')}
-          className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg"
-        >
-          Go back to Login
-        </button>
-      </div>
-    );
-  };
 
   // Main App component to handle simple routing
   const App = () => {

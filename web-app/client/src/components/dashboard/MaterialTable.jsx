@@ -1,3 +1,4 @@
+// src/components/quotation/MaterialTable.jsx
 import React, { useMemo, useState } from 'react';
 import {
   flexRender,
@@ -5,351 +6,227 @@ import {
   getSortedRowModel,
   useReactTable,
   getPaginationRowModel,
-  getFilteredRowModel
+  getFilteredRowModel,
 } from '@tanstack/react-table';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaSort, 
-  FaSortUp, 
-  FaSortDown, 
-  FaChevronLeft, 
-  FaChevronRight,
-  FaSearch,
-  FaFilter,
-  FaDownload,
-  FaEye,
-  FaEyeSlash
-} from 'react-icons/fa';
-import { FiMoreVertical } from 'react-icons/fi';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import { Skeleton } from '../ui/skeleton';
+import { Badge } from '../ui/badge';
+import {
+  ChevronUp, ChevronDown, ChevronsUpDown, ChevronLeft, ChevronRight, Search, Filter
+} from 'lucide-react';
 
-const MaterialTable = ({ 
-  columns, 
-  data, 
+const MaterialTable = ({
+  columns,
+  data,
   isLoading = false,
   pageSizeOptions = [5, 10, 25, 50],
-  initialPageSize = 10
+  initialPageSize = 10,
 }) => {
   const [sorting, setSorting] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [globalFilter, setGlobalFilter] = useState('');
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: initialPageSize
+    pageSize: initialPageSize,
   });
-  const [globalFilter, setGlobalFilter] = useState('');
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});
-  const [showColumnMenu, setShowColumnMenu] = useState(false);
 
   const table = useReactTable({
     data,
     columns,
     state: {
       sorting,
-      pagination,
+      columnFilters,
       globalFilter,
-      columnVisibility,
-      rowSelection
+      pagination,
     },
     onSortingChange: setSorting,
-    onPaginationChange: setPagination,
+    onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    autoResetPageIndex: false,
+    manualPagination: false,
+    pageCount: Math.ceil(data.length / pagination.pageSize),
   });
 
-  // Memoize rows to prevent unnecessary re-renders
-  const rows = useMemo(() => {
-    if (isLoading) {
-      return Array(pagination.pageSize).fill({});
-    }
-    return table.getRowModel().rows;
-  }, [isLoading, table, pagination.pageSize]);
+  const headerGroups = table.getHeaderGroups();
+  const rows = table.getRowModel().rows;
+  const pageCount = table.getPageCount();
 
-  const selectedRowsCount = Object.keys(rowSelection).length;
+  if (isLoading) {
+    return (
+      <div className="rounded-md border">
+        <div className="p-4 border-b">
+          <Skeleton className="h-6 w-1/4" />
+        </div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {[...Array(columns.length)].map((_, i) => (
+                <TableHead key={i}><Skeleton className="h-4 w-full" /></TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {[...Array(initialPageSize)].map((_, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {[...Array(columns.length)].map((_, cellIndex) => (
+                  <TableCell key={cellIndex}><Skeleton className="h-4 w-full" /></TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full">
-      {/* Table Controls */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-        <div className="relative flex-1 max-w-md">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <FaSearch className="text-gray-400" />
-          </div>
-          <input
-            type="text"
-            value={globalFilter}
-            onChange={e => setGlobalFilter(e.target.value)}
-            placeholder="Search materials..."
-            className="pl-10 pr-4 py-2.5 w-full rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors shadow-sm"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="rounded-md border shadow-sm bg-background"
+    >
+      {/* Filters and Search */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 gap-4 border-b">
+        <div className="relative w-full md:w-1/3">
+          <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search all columns..."
+            value={globalFilter ?? ''}
+            onChange={(event) => setGlobalFilter(String(event.target.value))}
+            className="pl-8"
           />
         </div>
-        
-        <div className="flex gap-2">
-          <div className="relative">
-            <button 
-              onClick={() => setShowColumnMenu(!showColumnMenu)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
-            >
-              <FaFilter className="text-gray-600" />
-              <span>Columns</span>
-            </button>
-            
-            <AnimatePresence>
-              {showColumnMenu && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10 overflow-hidden"
-                >
-                  <div className="p-2 border-b border-gray-200">
-                    <h4 className="font-medium text-gray-800">Toggle Columns</h4>
-                  </div>
-                  <div className="max-h-60 overflow-y-auto">
-                    {table.getAllLeafColumns().map(column => (
-                      <label 
-                        key={column.id}
-                        className="flex items-center px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={column.getIsVisible()}
-                          onChange={column.getToggleVisibilityHandler()}
-                          className="mr-2 rounded text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-gray-700">
-                          {column.columnDef.header || column.id}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-          
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm">
-            <FaDownload className="text-gray-600" />
-            <span>Export</span>
-          </button>
+        <div className="flex items-center space-x-2 w-full md:w-auto">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">Filters</span>
+          {/* Add specific column filter dropdowns here if needed */}
         </div>
       </div>
 
-      {/* Summary Bar */}
-      {selectedRowsCount > 0 && (
-        <motion.div 
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-4 p-3 bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 rounded-lg flex items-center justify-between"
-        >
-          <div className="flex items-center">
-            <span className="text-blue-700 font-medium">
-              {selectedRowsCount} {selectedRowsCount === 1 ? 'item' : 'items'} selected
-            </span>
-          </div>
-          <div className="flex gap-2">
-            <button className="px-3 py-1.5 text-sm bg-white border border-blue-500 text-blue-600 rounded hover:bg-blue-50 transition-colors">
-              Export Selected
-            </button>
-            <button 
-              onClick={() => setRowSelection({})}
-              className="px-3 py-1.5 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-              Clear
-            </button>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Table Container */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
-              {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id}>
-                  <th className="w-12 px-4 py-3">
-                    <input
-                      type="checkbox"
-                      checked={table.getIsAllPageRowsSelected()}
-                      onChange={table.getToggleAllPageRowsSelectedHandler()}
-                      className="rounded text-blue-600 focus:ring-blue-500"
-                    />
-                  </th>
-                  {headerGroup.headers.map(header => {
-                    const isVisible = header.column.getIsVisible();
-                    return (
-                      <th
-                        key={header.id}
-                        className={`px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider ${
-                          !isVisible ? 'hidden' : ''
-                        }`}
-                        style={{ 
-                          width: header.column.columnDef.meta?.width || 'auto'
-                        }}
-                      >
-                        {header.column.getCanSort() ? (
-                          <button
-                            className={`flex items-center space-x-1 group w-full ${
-                              header.column.getIsSorted() ? 'text-blue-600' : ''
-                            }`}
-                            onClick={header.column.getToggleSortingHandler()}
-                          >
-                            <span>
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                            </span>
-                            <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-                              {header.column.getIsSorted() === 'asc' ? (
-                                <FaSortUp className="text-blue-600" />
-                              ) : header.column.getIsSorted() === 'desc' ? (
-                                <FaSortDown className="text-blue-600" />
-                              ) : (
-                                <FaSort className="text-gray-400" />
-                              )}
-                            </span>
-                          </button>
-                        ) : (
-                          flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )
-                        )}
-                      </th>
-                    );
-                  })}
-                  <th className="w-12 px-4 py-3 text-right">
-                    <FiMoreVertical className="text-gray-400 mx-auto" />
-                  </th>
-                </tr>
+      {/* Table */}
+      <Table>
+        <TableHeader>
+          {headerGroups.map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id} className="text-left">
+                  {header.isPlaceholder ? null : (
+                    <Button
+                      variant="ghost"
+                      onClick={header.column.getToggleSortingHandler()}
+                      className="p-0 h-auto font-semibold hover:bg-transparent"
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {{
+                        asc: <ChevronUp className="ml-2 h-4 w-4" />,
+                        desc: <ChevronDown className="ml-2 h-4 w-4" />,
+                      }[header.column.getIsSorted()] ?? <ChevronsUpDown className="ml-2 h-4 w-4" />}
+                    </Button>
+                  )}
+                </TableHead>
               ))}
-            </thead>
-            
-            <tbody className="divide-y divide-gray-200">
-              {rows.map((row, rowIndex) => (
-                <motion.tr 
-                  key={row.id || `skeleton-row-${rowIndex}`}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: rowIndex * 0.02 }}
-                  className="hover:bg-gray-50 transition-colors"
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          <AnimatePresence initial={false}>
+            {rows?.length ? (
+              rows.map((row) => (
+                <motion.tr
+                  key={row.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="border-b hover:bg-muted/50 data-[state=selected]:bg-muted"
+                  data-state={row.getIsSelected() && 'selected'}
                 >
-                  <td className="px-4 py-3">
-                    {!isLoading && (
-                      <input
-                        type="checkbox"
-                        checked={row.getIsSelected()}
-                        onChange={row.getToggleSelectedHandler()}
-                        className="rounded text-blue-600 focus:ring-blue-500"
-                      />
-                    )}
-                  </td>
-                  {row.getVisibleCells().map(cell => {
-                    const isVisible = cell.column.getIsVisible();
-                    return (
-                      <td 
-                        key={cell.id}
-                        className={`px-4 py-3 text-sm ${!isVisible ? 'hidden' : ''}`}
-                      >
-                        {isLoading ? (
-                          <div className="h-4 bg-gray-200 rounded animate-pulse" style={{ 
-                            width: `${Math.max(60, Math.random() * 200)}px` 
-                          }} />
-                        ) : (
-                          flexRender(cell.column.columnDef.cell, cell.getContext())
-                        )}
-                      </td>
-                    );
-                  })}
-                  <td className="px-4 py-3">
-                    {!isLoading && (
-                      <button className="text-gray-400 hover:text-gray-700 transition-colors">
-                        <FiMoreVertical />
-                      </button>
-                    )}
-                  </td>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="py-3 px-4">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
                 </motion.tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        {!isLoading && data.length === 0 && (
-          <div className="py-12 text-center">
-            <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-              <FaEyeSlash className="text-gray-400 text-xl" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">No materials found</h3>
-            <p className="text-gray-500 max-w-md mx-auto">
-              Try adjusting your search or filter to find what you're looking for.
-            </p>
-          </div>
-        )}
-      </div>
-      
-      {/* Table Footer */}
-      <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="text-sm text-gray-600">
-          Showing {table.getRowModel().rows.length} of {data.length} items
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <div className="flex items-center">
-            <span className="mr-2 text-sm text-gray-600">Rows per page:</span>
-            <select
-              value={table.getState().pagination.pageSize}
-              onChange={e => table.setPageSize(Number(e.target.value))}
-              className="border border-gray-300 rounded px-2 py-1.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-            >
-              {pageSizeOptions.map(pageSize => (
-                <option key={pageSize} value={pageSize}>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </AnimatePresence>
+        </TableBody>
+      </Table>
+
+      {/* Pagination */}
+      <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 p-4 border-t">
+        <div className="flex items-center space-x-2">
+          <p className="text-sm font-medium">Rows per page</p>
+          <Select
+            value={`${pagination.pageSize}`}
+            onValueChange={(value) => {
+              table.setPageSize(Number(value));
+            }}
+          >
+            <SelectTrigger className="h-8 w-[70px]">
+              <SelectValue placeholder={pagination.pageSize} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {pageSizeOptions.map((pageSize) => (
+                <SelectItem key={pageSize} value={`${pageSize}`}>
                   {pageSize}
-                </option>
+                </SelectItem>
               ))}
-            </select>
-          </div>
-          
-          <div className="flex items-center space-x-1">
-            <button
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-              className={`p-2 rounded-full ${
-                table.getCanPreviousPage() 
-                  ? 'text-gray-700 hover:bg-gray-100' 
-                  : 'text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              <FaChevronLeft />
-            </button>
-            
-            <div className="flex items-center space-x-1">
-              <span className="text-sm text-gray-700">Page</span>
-              <span className="font-medium">{table.getState().pagination.pageIndex + 1}</span>
-              <span className="text-sm text-gray-700">of</span>
-              <span className="font-medium">{table.getPageCount()}</span>
-            </div>
-            
-            <button
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-              className={`p-2 rounded-full ${
-                table.getCanNextPage() 
-                  ? 'text-gray-700 hover:bg-gray-100' 
-                  : 'text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              <FaChevronRight />
-            </button>
-          </div>
+            </SelectContent>
+          </Select>
+          <span className="text-sm text-muted-foreground">
+            Page {pagination.pageIndex + 1} of {pageCount}
+          </span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            className="h-8 w-8 p-0"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <span className="sr-only">Go to previous page</span>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            className="h-8 w-8 p-0"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            <span className="sr-only">Go to next page</span>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

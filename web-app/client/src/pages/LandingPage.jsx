@@ -35,7 +35,7 @@ const LandingPage = () => {
 
   // Handle button actions
   const handleStartTrial = () => {
-    window.location.href = '/signup';
+    window.location.href = '/dashboard';
   };
 
   const handleScheduleDemo = () => {
